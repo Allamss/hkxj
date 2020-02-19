@@ -3,6 +3,7 @@ package cn.hkxj.platform.service;
 import cn.hkxj.platform.PlatformApplication;
 import cn.hkxj.platform.dao.StudentDao;
 import cn.hkxj.platform.pojo.Student;
+import cn.hkxj.platform.pojo.wechat.Openid;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,6 +12,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import javax.annotation.Resource;
+
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -40,11 +43,33 @@ public class OpenIdServiceTest {
                 }catch (Exception e){
                     e.printStackTrace();
                 }
-
-
             }
         }
+    }
 
+
+    @Test
+    public void openidIsBind(){
+        boolean a = openIdService.openidIsBind("o6393ws2oaJFXBZwViWSTJd6ABkU", "wx2212ea680ca5c05d");
+        System.out.println(a);
 
     }
+
+    @Test
+    public void getOpenid(){
+        openIdService.getOpenid("o6393ws2oaJFXBZwViWSTJd6ABkU", "wx2212ea680ca5c05d");
+    }
+
+    @Test
+    public void openIdUnbind(){
+        openIdService.openIdUnbind("o6393wvmheXId6z3pO9hPsZrI2VQ", "wx2212ea680ca5c05d");
+    }
+
+    @Test
+    public void getStudentByOpenId(){
+        Student studentByOpenId = openIdService.getStudentByOpenId("o6393wvmheXId6z3pO9hPsZrI2VQ", "wx2212ea680ca5c05d");
+        System.out.println(studentByOpenId);
+
+    }
+
 }

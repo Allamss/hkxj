@@ -3,6 +3,7 @@ package cn.hkxj.platform.service;
 import cn.hkxj.platform.PlatformApplication;
 import cn.hkxj.platform.mapper.OpenidMapper;
 import cn.hkxj.platform.mapper.OpenidPlusMapper;
+import cn.hkxj.platform.mapper.WechatOpenidMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,16 +25,18 @@ import static org.junit.Assert.*;
 @WebAppConfiguration
 public class ExcelServiceTest {
 
-    @Resource
-    private ExcelService excelService;
+   /* @Resource
+    private ExcelService excelService;*/
     @Resource
     private OpenidPlusMapper openidPlusMapper;
+    @Resource
+    private WechatOpenidMapper wechatOpenidMapper;
 
 
-    @Test
+    /*@Test
     public void isDistinct(){
         System.out.println(excelService.lastIndexOfNum("14-16单周上"));;
-    }
+    }*/
 
     @Test
     public void readExcel() {
@@ -43,7 +46,8 @@ public class ExcelServiceTest {
 //        System.out.println(excelService.parseBuilding("N10播放室"));
 //        List<ExcelResult> excelResults = excelService.readExcel();
 //        excelService.insertDb(excelResults);
-        System.out.println(openidPlusMapper.getAllOpenidsFromOneClass(316, "oWPfu0noOKkUHpTkmP8ExbUgfqUY"));;
+        System.out.println(openidPlusMapper.getAllOpenidsFromOneClass(316, "oWPfu0noOKkUHpTkmP8ExbUgfqUY"));
+        System.out.println(wechatOpenidMapper.getAllOpenidsFromOneClass(316, "oWPfu0noOKkUHpTkmP8ExbUgfqUY"));//后添加的测试代码
     }
 
     public static void main(String[] args) {
