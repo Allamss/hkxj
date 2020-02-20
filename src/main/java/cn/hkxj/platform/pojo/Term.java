@@ -1,5 +1,6 @@
 package cn.hkxj.platform.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.common.base.MoreObjects;
 import lombok.Data;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -10,6 +11,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  * @date 2019/5/1
  */
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Term {
     /**
      * 如果是2018到2019年第一学期

@@ -1,8 +1,8 @@
 package cn.hkxj.platform.utils;
 
+import cn.hkxj.platform.PlatformApplication;
 import cn.hkxj.platform.pojo.SchoolTime;
 import cn.hkxj.platform.pojo.Term;
-import cn.hkxj.platform.pojo.constant.RedisKeys;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.CharUtils;
@@ -13,9 +13,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import javax.annotation.Resource;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -32,14 +34,13 @@ import java.util.*;
 @SpringBootTest
 @WebAppConfiguration
 @Slf4j
-@Component
-public class DateUtils {
+public class DateUtilsTest2 {
+   @Autowired
+   RedisTemplate<Object,Object> redisTemplate;
+    @Autowired
+   StringRedisTemplate  stringRedisTemplate;
 
-    static RedisTemplate redisTemplate;
-
-    static StringRedisTemplate stringRedisTemplate;
-
-//    private final static String term_start = "2019-08-26";
+//    private final static String term_start="2019-5-26" ;
 
     public final static String YYYY_MM_DD_PATTERN = "yyyyMMdd";
 
@@ -52,33 +53,11 @@ public class DateUtils {
     public final static String HH_MM_SS_PATTERN = "hh:mm:ss";
 
 
-    @Autowired
-    public  void setTemplate(RedisTemplate redisTemplate){
-        DateUtils.redisTemplate = redisTemplate;
-    }
-    @Autowired
-    public  void setTemplate(StringRedisTemplate stringRedisTemplate){
-        DateUtils.stringRedisTemplate = stringRedisTemplate;
-    }
-
-    /*
-     *  学期开始时间存入redis，可动态配置
-     */
-    public static   void  setTermStart(String termStart)  {
-        stringRedisTemplate.opsForValue().set(RedisKeys.TERM_STARY.getName(),termStart);
-
-    }
-
-    public static    String getTermStart()  {
-        return stringRedisTemplate.opsForValue().get(RedisKeys.TERM_STARY.getName());
-    }
-
-
-    public static Integer getCurrentWeek() {
+    public  Integer getCurrentWeek() {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
         Calendar calendar = Calendar.getInstance(Locale.CHINA);
         try {
-            calendar.setTime(format.parse(getTermStart()));
+            calendar.setTime(format.parse(getTerm_start()));
         } catch (ParseException e) {
             log.error("parse string to date fail，error message{}", e.getMessage());
             throw new RuntimeException("parse string to date fail，error message" + e.getMessage());
@@ -93,7 +72,7 @@ public class DateUtils {
      *
      * @return 星期几
      */
-    public static Integer getCurrentDay() {
+    public  Integer getCurrentDay() {
         Date date = new Date();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
@@ -105,11 +84,11 @@ public class DateUtils {
         return currentDay;
     }
 
-    public static String getTimeOfPattern(LocalDateTime localDateTime, String pattern) {
+    public  String getTimeOfPattern(LocalDateTime localDateTime, String pattern) {
         return DateTimeFormatter.ofPattern(pattern).format(localDateTime);
     }
 
-    public static LocalDateTime string2LocalDateTime(String time, String pattern) {
+    public  LocalDateTime string2LocalDateTime(String time, String pattern) {
         return LocalDate.parse(time, DateTimeFormatter.ofPattern(pattern)).atStartOfDay();
     }
 
@@ -118,7 +97,7 @@ public class DateUtils {
      * 格式化时间转换为标准Java时间
      * @return
      */
-    public static Date localDateToDate(String time, String pattern) {
+    public  Date localDateToDate(String time, String pattern) {
 
         SimpleDateFormat format =  new SimpleDateFormat(pattern);
 
@@ -130,31 +109,16 @@ public class DateUtils {
         }
     }
 
-//    public static SchoolTime getCurrentSchoolTime() {
-//        SchoolTime schoolTime = new SchoolTime();
-//        schoolTime.setDay(getCurrentDay());
-//        schoolTime.setWeek(getCurrentWeek());
-//        schoolTime.setTerm(new Term(2019, 2020, 1));
-//        return schoolTime;
-//    }
-
-    /*
-     *  根据学期获取周
-     */
-    public static void setSchoolTime(Term term) {
-        redisTemplate.opsForValue().set(RedisKeys.TERM.getName(),term);
-    }
-
-    public static SchoolTime getCurrentSchoolTime()  {
-        SchoolTime schoolTime=new SchoolTime();
-        Term term=(Term)redisTemplate.opsForValue().get(RedisKeys.TERM.getName());
-        schoolTime.setTerm(term);
-        schoolTime.setWeek(getCurrentWeek());
+    public  SchoolTime getCurrentSchoolTime() {
+        SchoolTime schoolTime = new SchoolTime();
         schoolTime.setDay(getCurrentDay());
+        schoolTime.setWeek(getCurrentWeek());
+        schoolTime.setTerm(new Term(2019, 2020, 1));
         return schoolTime;
     }
 
-    public static String dateToChinese(Date date){
+
+    public  String dateToChinese(Date date){
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
         StringBuffer buffer = new StringBuffer();
@@ -166,25 +130,50 @@ public class DateUtils {
         return buffer.toString();
     }
 
-    public static byte getDistinct() {
+    public  byte getDistinct() {
         return (byte) (getCurrentWeek() % 2 == 0 ? 2 : 1);
     }
 
-    public static byte getContraryDistinct() {
+    public  byte getContraryDistinct() {
         return (byte) (getCurrentWeek() % 2 == 0 ? 1 : 2);
     }
 
-    @Test
-    public   void demo(){
-        Date date = localDateToDate("20191105102840", PATTERN_WITHOUT_SPILT);
-        System.out.println(date);
-        System.out.println(dateToChinese(date));
-        String s="2019-8-26";
-        setTermStart(s);
-        System.out.println(getTermStart());
-        Term term=new Term(2000,2001,1);
-        setSchoolTime(term);
-        System.out.println(getCurrentSchoolTime());
+    public  void  setTerm_start(String term_start)  {
+        stringRedisTemplate.opsForValue().set("term_start",term_start);
+    }
+    public  String getTerm_start()  {
+        return stringRedisTemplate.opsForValue().get("term_start");
+    }
+    public void setSchoolTime(Term term) {
+        Set set=new TreeSet();
+        SchoolTime schoolTime=new SchoolTime();
+        schoolTime.setTerm(term);
+        schoolTime.setDay(getCurrentDay());
+        schoolTime.setWeek(getCurrentWeek());
+        set.add(schoolTime);
+      redisTemplate.opsForValue().set("schoolTime",set);
+    }
+    public SchoolTime getSchoolTime()  {
+        SchoolTime schoolTime=null;
+        TreeSet set=(TreeSet)redisTemplate.opsForValue().get("schoolTime");
+        Iterator iterator=set.iterator();
+        while (iterator.hasNext()){
+            schoolTime=(SchoolTime)iterator.next();
+        }
+return schoolTime;
+    }
+@Test
+    public void demo(){
+    Date date = localDateToDate("20191105102840", PATTERN_WITHOUT_SPILT);
+    System.out.println(date);
+    System.out.println(dateToChinese(date));
+        String s="2019-5-26";
+        setTerm_start(s);
+        System.out.println(getTerm_start());
+
+    Term term=new Term(2000,2001,1);
+    setSchoolTime(term);
+    System.out.println(getSchoolTime());
 
     }
 }
