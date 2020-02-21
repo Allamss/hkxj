@@ -3,6 +3,7 @@ package cn.hkxj.platform.service;
 import cn.hkxj.platform.dao.ExamTimetableDao;
 import cn.hkxj.platform.dao.StudentDao;
 import cn.hkxj.platform.dao.StudentExamTimeTableDao;
+import cn.hkxj.platform.dao.StudentUserDao;
 import cn.hkxj.platform.pojo.*;
 import cn.hkxj.platform.utils.DateUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -36,10 +37,12 @@ public class ExamTimeTableService {
     private StudentExamTimeTableDao studentExamTimeTableDao;
     @Resource
     private RoomService roomService;
+    @Resource
+    private StudentUserDao studentUserDao;
 
 
     public List<Exam> getExamTimeListFromSpider(int account) {
-        Student student = studentDao.selectStudentByAccount(account);
+        StudentUser student = studentUserDao.selectStudentByAccount(account);
 
         return newUrpSpiderService.getExamTime(student).stream()
                 .filter(x -> StringUtils.isNotEmpty(x.getDate()))

@@ -5,7 +5,7 @@ import cn.hkxj.platform.builder.TemplateBuilder;
 import cn.hkxj.platform.config.wechat.WechatTemplateProperties;
 import cn.hkxj.platform.exceptions.UrpEvaluationException;
 import cn.hkxj.platform.exceptions.UrpException;
-import cn.hkxj.platform.pojo.Student;
+import cn.hkxj.platform.pojo.StudentUser;
 import cn.hkxj.platform.pojo.constant.MiniProgram;
 import cn.hkxj.platform.pojo.vo.GradeVo;
 import cn.hkxj.platform.pojo.wechat.miniprogram.SubscribeGradeData;
@@ -121,7 +121,7 @@ public class GradeAutoUpdateTask extends BaseSubscriptionTask {
 
     }
 
-    void processScheduleTask(Student student) {
+    void processScheduleTask(StudentUser student) {
         processScheduleTask(new UrpFetchTask(student));
     }
 
@@ -130,7 +130,7 @@ public class GradeAutoUpdateTask extends BaseSubscriptionTask {
      */
     private void processScheduleTask(UrpFetchTask urpFetchTask) {
 
-        Student student = urpFetchTask.student;
+        StudentUser student = urpFetchTask.student;
         if (student == null) {
             return;
         }
@@ -144,7 +144,7 @@ public class GradeAutoUpdateTask extends BaseSubscriptionTask {
         }
     }
 
-    public void sendMessageToApp(Student student, GradeVo gradeVo){
+    public void sendMessageToApp(StudentUser student, GradeVo gradeVo){
         SubscribeMessage<SubscribeGradeData> appMessage = new SubscribeMessage<>();
         appMessage.setTemplateId("dmE0nyulM8OVcUs-KojDxCYECrKTmzOGDkEUUm2T5UE")
                 .setPage(MiniProgram.GRADE_PATH.getValue())
@@ -157,7 +157,7 @@ public class GradeAutoUpdateTask extends BaseSubscriptionTask {
 
     }
 
-    public void sendMessageToPlus(Student student, GradeVo gradeVo){
+    public void sendMessageToPlus(StudentUser student, GradeVo gradeVo){
         List<WxMpTemplateData> templateData = templateBuilder.gradeToTemplateData(student, gradeVo);
         WxMpTemplateMessage.MiniProgram miniProgram = new WxMpTemplateMessage.MiniProgram();
         miniProgram.setAppid(MiniProgram.APP_ID);
@@ -171,7 +171,7 @@ public class GradeAutoUpdateTask extends BaseSubscriptionTask {
 
     }
 
-    public void sendGradeToAccount(Student student, GradeVo gradeVo) {
+    public void sendGradeToAccount(StudentUser student, GradeVo gradeVo) {
 
         sendMessageToApp(student, gradeVo);
         sendMessageToPlus(student, gradeVo);
@@ -179,7 +179,7 @@ public class GradeAutoUpdateTask extends BaseSubscriptionTask {
     }
 
 
-    List<GradeVo> getUpdateList(Student student) {
+    List<GradeVo> getUpdateList(StudentUser student) {
 
         List<GradeVo> termGrade = newGradeSearchService.getCurrentTermGradeVoSync(student);
         return termGrade.stream()
@@ -205,9 +205,9 @@ public class GradeAutoUpdateTask extends BaseSubscriptionTask {
     @Data
     private static class UrpFetchTask {
         private int timeoutCount;
-        private Student student;
+        private StudentUser student;
 
-        UrpFetchTask(Student student) {
+        UrpFetchTask(StudentUser student) {
             this.student = student;
         }
     }

@@ -1,12 +1,14 @@
 package cn.hkxj.platform.service.wechat;
 
 import cn.hkxj.platform.dao.StudentDao;
+import cn.hkxj.platform.dao.StudentUserDao;
 import cn.hkxj.platform.dao.WechatBindRecordDao;
 import cn.hkxj.platform.dao.WechatOpenIdDao;
 import cn.hkxj.platform.exceptions.OpenidExistException;
 import cn.hkxj.platform.exceptions.PasswordUnCorrectException;
 import cn.hkxj.platform.exceptions.ReadTimeoutException;
 import cn.hkxj.platform.pojo.*;
+import cn.hkxj.platform.pojo.vo.StudentVo;
 import cn.hkxj.platform.service.ClassService;
 import cn.hkxj.platform.service.NewUrpSpiderService;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +17,8 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.Date;
+
+import static cn.hkxj.platform.utils.DESUtil.encrypt;
 
 /**
  * @author junrong.chen
@@ -38,6 +42,10 @@ public class StudentBindService {
     private WechatBindRecordDao wechatBindRecordDao;
     @Resource
     private ClassService classService;
+    @Resource
+    private StudentUserDao studentUserDao;
+    @Value("${student.password.salt}")
+    private String key;
     /**
      * 学号与微信公众平台openID关联
      * <p>
@@ -55,13 +63,13 @@ public class StudentBindService {
      * @throws ReadTimeoutException       读取信息超时异常
      * @throws OpenidExistException       Openid已存在
      */
-    public Student studentBind(String openid, String account, String password, String appid) throws OpenidExistException {
+    public StudentVo studentBind(String openid, String account, String password, String appid) throws OpenidExistException {
 
-        Student student = studentLogin(account, password);
+        StudentVo studentVo = studentLogin(account, password);
 
-        studentBind(student, openid, appid);
+        studentBind(studentVo, openid, appid);
 
-        return student;
+        return studentVo;
 
     }
 
@@ -69,21 +77,21 @@ public class StudentBindService {
      * 用于学生从非微信渠道登录
      *
      * @param account  账号
-     * @param password 密码
+     * @param enablePassword 密码
      * @return 学生信息
      */
-    public Student studentLogin(String account, String password) throws PasswordUnCorrectException {
-        Student student = studentDao.selectStudentByAccount(Integer.parseInt(account));
+    public StudentVo studentLogin(String account, String enablePassword) throws PasswordUnCorrectException {
 
-        if (student != null && (!student.getIsCorrect() || !student.getPassword().equals(password))) {
-            newUrpSpiderService.checkStudentPassword(account, password);
-            studentDao.updatePassword(account, password);
+        StudentUser student = studentUserDao.selectStudentByAccount(Integer.parseInt(account));
+        if (student != null && (!student.getIsCorrect() || !student.getPassword().equals(encrypt(student.getPassword(), account + key)))) {
+            newUrpSpiderService.checkStudentPassword(account, enablePassword);
+            studentDao.updatePassword(account, enablePassword);
         } else if (student == null) {
-            student = newUrpSpiderService.getStudentInfo(account, password);
-            studentDao.insertStudent(student);
+            student = newUrpSpiderService.getStudentUserInfo(account, enablePassword);
+            studentUserDao.insertStudentSelective(student);
         }
 
-        return student;
+        return new StudentVo(student, student.getAccount().toString()+key);
     }
 
     /**
@@ -96,7 +104,7 @@ public class StudentBindService {
      * @param openid  微信用户唯一标识
      * @param appid   微信平台对应的id
      */
-     void studentBind(Student student, String openid, String appid) {
+     void studentBind(StudentVo student, String openid, String appid) {
         WechatOpenid wechatOpenid = wechatOpenIdDao.selectByUniqueKey(appid, openid);
         if (wechatOpenid != null) {
             if (!student.getAccount().equals(wechatOpenid.getAccount())){

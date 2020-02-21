@@ -56,6 +56,8 @@ public class NewGradeSearchService {
     private GradeDao gradeDao;
     @Resource
     private StringRedisTemplate stringRedisTemplate;
+    @Resource
+    private StudentUserDao studentUserDao;
 
 
     private static final Term currentTerm = new Term(2019, 2020, 1);
@@ -70,7 +72,7 @@ public class NewGradeSearchService {
      * 请使用新方法{@linkplain #getCurrentTermGrade}
      */
     @Deprecated
-    public GradeSearchResult getCurrentGrade(Student student) {
+    public GradeSearchResult getCurrentGrade(StudentUser student) {
         List<GradeVo> currentTermGrade = getCurrentTermGrade(student);
         List<UrpGradeAndUrpCourse> result = currentTermGrade.stream()
                 .map(x -> new UrpGradeAndUrpCourse()
@@ -85,7 +87,7 @@ public class NewGradeSearchService {
         return new GradeSearchResult(result, false);
     }
 
-    public List<GradeDetail> getCurrentTermGradeFromSpider(Student student) {
+    public List<GradeDetail> getCurrentTermGradeFromSpider(StudentUser student) {
         List<UrpGeneralGradeForSpider> generalGrade = newUrpSpiderService.getCurrentGeneralGrade(student);
         generalGrade.stream().findFirst().ifPresent(x -> {
             if (!x.getId().getStudentNumber().equals(student.getAccount().toString())) {
@@ -112,7 +114,7 @@ public class NewGradeSearchService {
 
 
     public List<GradeVo> getCurrentTermGrade(String account, String password) {
-        Student student = studentDao.selectStudentByAccount(Integer.parseInt(account));
+        StudentUser student = studentUserDao.selectStudentByAccount(Integer.parseInt(account));
         return getCurrentTermGrade(student);
     }
 
@@ -122,7 +124,7 @@ public class NewGradeSearchService {
      * @param student 学生实体
      * @return 学生成绩
      */
-    public List<GradeVo> getCurrentTermGrade(Student student) {
+    public List<GradeVo> getCurrentTermGrade(StudentUser student) {
         CompletableFuture<List<GradeVo>> future =
                 CompletableFuture.supplyAsync(() -> getCurrentTermGradeVoSync(student), gradeAutoUpdatePool);
         List<GradeVo> gradeDetailList;
@@ -161,12 +163,12 @@ public class NewGradeSearchService {
      * @param student 学生实体
      * @return 学生成绩
      */
-    public List<GradeVo> getCurrentTermGradeVoSync(Student student) {
+    public List<GradeVo> getCurrentTermGradeVoSync(StudentUser student) {
 
         return gradeToVo(getCurrentTermGradeSync(student));
     }
 
-    public List<Grade> getCurrentTermGradeSync(Student student) {
+    public List<Grade> getCurrentTermGradeSync(StudentUser student) {
         List<GradeDetail> gradeDetailList = getCurrentTermGradeFromSpider(student);
 
         List<Grade> gradeList = gradeDetailList.stream()
@@ -198,7 +200,7 @@ public class NewGradeSearchService {
         return finishUpdate;
     }
     public GradeResultVo getGrade(String account, String password) {
-        Student student = studentDao.selectStudentByAccount(Integer.parseInt(account));
+        StudentUser student = studentUserDao.selectStudentByAccount(Integer.parseInt(account));
         return getGrade(student);
 
     }
@@ -211,7 +213,7 @@ public class NewGradeSearchService {
      * @param student 学生实体
      * @return 所有的成绩数据
      */
-    public GradeResultVo getGrade(Student student) {
+    public GradeResultVo getGrade(StudentUser student) {
         GradeResultVo resultVo;
 
         if(isCurrentFinishFetch(student.getAccount().toString()) && isEverFinishFetch(student.getAccount().toString())){
@@ -363,7 +365,7 @@ public class NewGradeSearchService {
 
     }
 
-    public List<Grade> getSchemeGrade(Student student) {
+    public List<Grade> getSchemeGrade(StudentUser student) {
 
         List<Grade> gradeList = getSchemeGradeFromSpider(student);
 
@@ -374,7 +376,7 @@ public class NewGradeSearchService {
 
     }
 
-    public List<Grade> getSchemeGradeFromSpider(Student student){
+    public List<Grade> getSchemeGradeFromSpider(StudentUser student){
         return newUrpSpiderService.getSchemeGrade(student)
                 .stream()
                 .map(Scheme::getCjList)
@@ -393,7 +395,7 @@ public class NewGradeSearchService {
     /**
      * 返回新一个新成绩的list，旧的的成绩会被过滤
      */
-    public List<Grade> checkUpdate(Student student, List<Grade> gradeList) {
+    public List<Grade> checkUpdate(StudentUser student, List<Grade> gradeList) {
         List<Grade> gradeListFromDb = gradeDao.getCurrentTermGradeByAccount(student.getAccount());
         // 如果数据库之前没有保存过该学号成绩，则直接返回抓取结果
         if (CollectionUtils.isEmpty(gradeListFromDb)) {

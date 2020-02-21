@@ -1,6 +1,6 @@
 package cn.hkxj.platform.interceptor;
 
-import cn.hkxj.platform.pojo.Student;
+import cn.hkxj.platform.pojo.StudentUser;
 import cn.hkxj.platform.pojo.constant.RedisKeys;
 import cn.hkxj.platform.service.OpenIdService;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +40,7 @@ public class StudentInfoInterceptor implements WxMessageInterceptor{
 
         //TODO 这里不能排除掉用户绑定了新账号的情况  除非每次都查一下库  但是这样就失去了缓存的意义  最好有解绑事件来触发缓存的更新
         if(StringUtils.isEmpty(account)){
-            Student student = openIdService.getStudentByOpenId(openid, appid);
+            StudentUser student = openIdService.getStudentByOpenId(openid, appid);
             String mark = student.getAccount().toString() + " " + student.getName();
             executor.submit(() ->{
                 try {

@@ -1,7 +1,7 @@
 package cn.hkxj.platform.service.wechat.handler.messageHandler;
 
 import cn.hkxj.platform.builder.TextBuilder;
-import cn.hkxj.platform.pojo.Student;
+import cn.hkxj.platform.pojo.StudentUser;
 import cn.hkxj.platform.service.NewUrpSpiderService;
 import cn.hkxj.platform.service.OpenIdService;
 import cn.hkxj.platform.spider.newmodel.examtime.UrpExamTime;
@@ -41,8 +41,8 @@ public class ExamMessageHandler implements WxMpMessageHandler {
     @Override
     public WxMpXmlOutMessage handle(WxMpXmlMessage wxMpXmlMessage, Map<String, Object> map, WxMpService wxMpService, WxSessionManager wxSessionManager) throws WxErrorException {
         String appId = wxMpService.getWxMpConfigStorage().getAppId();
-        Student student = openIdService.getStudentByOpenId(wxMpXmlMessage.getFromUser(), appId);
-        List<UrpExamTime> examTime = newUrpSpiderService.getExamTime(student.getAccount().toString(), student.getPassword());
+        StudentUser student = openIdService.getStudentByOpenId(wxMpXmlMessage.getFromUser(), appId);
+        List<UrpExamTime> examTime = newUrpSpiderService.getExamTime(student);
 
         return textBuilder.build(examListToText(examTime), wxMpXmlMessage, wxMpService);
     }

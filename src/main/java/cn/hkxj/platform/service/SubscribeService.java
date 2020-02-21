@@ -4,10 +4,10 @@ import cn.hkxj.platform.dao.ScheduleTaskDao;
 import cn.hkxj.platform.mapper.OpenidMapper;
 import cn.hkxj.platform.mapper.SubscribeOpenidMapper;
 import cn.hkxj.platform.pojo.ScheduleTask;
-import cn.hkxj.platform.pojo.Student;
+import cn.hkxj.platform.pojo.StudentUser;
 import cn.hkxj.platform.pojo.constant.SubscribeScene;
-import cn.hkxj.platform.pojo.wechat.SubscribeOpenid;
 import cn.hkxj.platform.pojo.example.SubscribeOpenidExample;
+import cn.hkxj.platform.pojo.wechat.SubscribeOpenid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -81,13 +81,13 @@ public class SubscribeService {
     }
 
 
-    public Set<Student> getGradeUpdateSubscribeStudent(){
+    public Set<StudentUser> getGradeUpdateSubscribeStudent(){
         List<ScheduleTask> scheduleTaskList = scheduleTaskDao.selectByPojo(new ScheduleTask().setScene(Integer.parseInt(SubscribeScene.GRADE_AUTO_UPDATE.getScene())));
 
         return scheduleTaskList.stream()
                 .map(x-> openIdService.getStudentByOpenId(x.getOpenid(), x.getAppid()))
                 .filter(Objects::nonNull)
-                .filter(Student::getIsCorrect)
+                .filter(StudentUser::getIsCorrect)
                 .filter(x-> !newGradeSearchService.isCurrentFinishFetch(x.getAccount().toString()))
                 .collect(Collectors.toSet());
 

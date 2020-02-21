@@ -60,8 +60,8 @@ public class NewUrpSpiderService {
      * 这个方法只有基本得成绩信息  包括相信成绩信息的抓取使用{@see #getCurrentTermGrade()}
      */
     @Retryable(value = UrpException.class, maxAttempts = 3)
-    List<UrpGeneralGradeForSpider> getCurrentGeneralGrade(Student student) {
-        NewUrpSpider spider = getSpider(student.getAccount().toString(), student.getPassword());
+    List<UrpGeneralGradeForSpider> getCurrentGeneralGrade(StudentUser student) {
+        NewUrpSpider spider = getSpider(student.getAccount().toString(), student.getEnablePassword(student.getAccount().toString()+key));
         return spider.getCurrentGeneralGrade();
     }
 
@@ -143,21 +143,21 @@ public class NewUrpSpiderService {
 
 
     @Retryable(value = UrpException.class, maxAttempts = 3)
-    public TeachingEvaluation searchTeachingEvaluationInfo(Student student) {
-        NewUrpSpider spider = getSpider(student.getAccount().toString(), student.getPassword());
+    public TeachingEvaluation searchTeachingEvaluationInfo(StudentUser student) {
+        NewUrpSpider spider = getSpider(student.getAccount().toString(), student.getEnablePassword(student.getAccount().toString()+key));
         return spider.searchTeachingEvaluationInfo();
     }
 
 
     @Retryable(value = UrpException.class, maxAttempts = 3)
-    public void evaluate(Student student, EvaluationPost evaluationPost) {
-        NewUrpSpider spider = getSpider(student.getAccount().toString(), student.getPassword());
+    public void evaluate(StudentUser student, EvaluationPost evaluationPost) {
+        NewUrpSpider spider = getSpider(student.getAccount().toString(), student.getEnablePassword(student.getAccount().toString()+key));
         spider.evaluation(evaluationPost);
     }
 
     @Retryable(value = UrpException.class, maxAttempts = 3)
-    public String getEvaluationToken(Student student, EvaluationPagePost evaluationPagePost) {
-        NewUrpSpider spider = getSpider(student.getAccount().toString(), student.getPassword());
+    public String getEvaluationToken(StudentUser student, EvaluationPagePost evaluationPagePost) {
+        NewUrpSpider spider = getSpider(student.getAccount().toString(), student.getEnablePassword(student.getAccount().toString()+key));
         return spider.getEvaluationToken(evaluationPagePost);
     }
 
@@ -209,8 +209,8 @@ public class NewUrpSpiderService {
     }
 
     @Retryable(value = UrpException.class, maxAttempts = 3)
-    public List<UrpExamTime> getExamTime(Student student) {
-        return getExamTime(student.getAccount().toString(), student.getPassword());
+    public List<UrpExamTime> getExamTime(StudentUser student) {
+        return getExamTime(student.getAccount().toString(), student.getEnablePassword(student.getAccount().toString()+key));
     }
 
     @Retryable(value = UrpException.class, maxAttempts = 3)
@@ -221,8 +221,8 @@ public class NewUrpSpiderService {
 
 
     @Retryable(value = UrpException.class, maxAttempts = 3)
-    public List<Scheme> getSchemeGrade(Student student) {
-        NewUrpSpider spider = getSpider(student.getAccount().toString(), student.getPassword());
+    public List<Scheme> getSchemeGrade(StudentUser student) {
+        NewUrpSpider spider = getSpider(student.getAccount().toString(), student.getEnablePassword(student.getAccount().toString()+key));
         return spider.getSchemeGrade();
     }
 

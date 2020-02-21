@@ -5,7 +5,7 @@ import cn.hkxj.platform.builder.TextBuilder;
 import cn.hkxj.platform.exceptions.UrpEvaluationException;
 import cn.hkxj.platform.pojo.GradeSearchResult;
 import cn.hkxj.platform.pojo.ScheduleTask;
-import cn.hkxj.platform.pojo.Student;
+import cn.hkxj.platform.pojo.StudentUser;
 import cn.hkxj.platform.pojo.constant.SubscribeScene;
 import cn.hkxj.platform.service.NewGradeSearchService;
 import cn.hkxj.platform.service.OpenIdService;
@@ -56,7 +56,7 @@ public class GradeMessageHandler implements WxMpMessageHandler {
         String appId = wxMpService.getWxMpConfigStorage().getAppId();
         String openid = wxMpXmlMessage.getFromUser();
 
-        Student student = openIdService.getStudentByOpenId(openid, appId);
+        StudentUser student = openIdService.getStudentByOpenId(openid, appId);
         ScheduleTask scheduleTask = new ScheduleTask(appId, openid, SubscribeScene.GRADE_AUTO_UPDATE.getScene());
 
         cacheThreadPool.execute(() -> scheduleTaskService.checkAndSetSubscribeStatus(scheduleTask, true));

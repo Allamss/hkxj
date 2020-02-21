@@ -3,7 +3,7 @@ package cn.hkxj.platform.service;
 import cn.hkxj.platform.PlatformApplication;
 import cn.hkxj.platform.dao.StudentDao;
 import cn.hkxj.platform.pojo.Student;
-import cn.hkxj.platform.pojo.wechat.Openid;
+import cn.hkxj.platform.pojo.StudentUser;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,10 +12,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import javax.annotation.Resource;
-
-import java.util.List;
-
-import static org.junit.Assert.*;
 
 @Slf4j
 @RunWith(SpringRunner.class)
@@ -67,7 +63,7 @@ public class OpenIdServiceTest {
 
     @Test
     public void getStudentByOpenId(){
-        Student studentByOpenId = openIdService.getStudentByOpenId("o6393wvmheXId6z3pO9hPsZrI2VQ", "wx2212ea680ca5c05d");
+        StudentUser studentByOpenId = openIdService.getStudentByOpenId("o6393wvmheXId6z3pO9hPsZrI2VQ", "wx2212ea680ca5c05d");
         System.out.println(studentByOpenId);
 
     }

@@ -2,26 +2,15 @@ package cn.hkxj.platform.service;
 
 import cn.hkxj.platform.MDCThreadPool;
 import cn.hkxj.platform.PlatformApplication;
-import cn.hkxj.platform.config.wechat.WechatMpConfiguration;
-import cn.hkxj.platform.config.wechat.WechatMpPlusProperties;
 import cn.hkxj.platform.dao.ScheduleTaskDao;
 import cn.hkxj.platform.dao.StudentDao;
 import cn.hkxj.platform.exceptions.PasswordUnCorrectException;
 import cn.hkxj.platform.mapper.OpenidPlusMapper;
-import cn.hkxj.platform.pojo.ScheduleTask;
-import cn.hkxj.platform.pojo.Student;
+import cn.hkxj.platform.pojo.StudentUser;
 import cn.hkxj.platform.pojo.constant.RedisKeys;
 import cn.hkxj.platform.pojo.constant.SubscribeScene;
-import cn.hkxj.platform.pojo.example.OpenidExample;
-import cn.hkxj.platform.pojo.wechat.Openid;
 import cn.hkxj.platform.spider.newmodel.evaluation.EvaluationPagePost;
-import cn.hkxj.platform.spider.newmodel.grade.CurrentGrade;
-import cn.hkxj.platform.spider.newmodel.grade.general.UrpGeneralGradeForSpider;
-import cn.hkxj.platform.spider.newmodel.grade.general.UrpGradeForSpider;
 import lombok.extern.slf4j.Slf4j;
-import me.chanjar.weixin.common.error.WxErrorException;
-import me.chanjar.weixin.mp.api.WxMpService;
-import me.chanjar.weixin.mp.bean.kefu.WxMpKefuMessage;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.MDC;
@@ -31,7 +20,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import javax.annotation.Resource;
-
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -65,9 +53,6 @@ public class TeachingEvaluationServiceTest {
     @Test
     public void evaluate() {
 
-        Student student = studentDao.selectStudentByAccount(2018023243);
-        int evaluate = teachingEvaluationService.evaluate(student);
-        System.out.println(evaluate);
     }
 
 
@@ -166,12 +151,12 @@ public class TeachingEvaluationServiceTest {
 
     @Test
     public void lookUp2() {
-        List<Student> studentList = scheduleTaskDao.getMiniProgramSubscribeTask(SubscribeScene.GRADE_AUTO_UPDATE)
+        List<StudentUser> studentList = scheduleTaskDao.getMiniProgramSubscribeTask(SubscribeScene.GRADE_AUTO_UPDATE)
                 .stream()
                 .map(x -> openIdService.getStudentByOpenId(x.getOpenid(), "wx05f7264e83fa40e9"))
                 .collect(Collectors.toList());
 
-        for (Student member : studentList) {
+        for (StudentUser member : studentList) {
             try {
                 newUrpSpiderService.getCurrentGeneralGrade(member);
                 String preLoad = MDC.get("preLoad");
@@ -191,9 +176,4 @@ public class TeachingEvaluationServiceTest {
         }
     }
 
-
-    @Test
-    public void test(){
-        teachingEvaluationService.evaluateForNotBind(2018022950, "1" ,"wx541fd36e6b400648", "oCxRO1BywucCEtvi2O8D1Nl_TDOY");
-    }
 }

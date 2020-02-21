@@ -1,6 +1,5 @@
 package cn.hkxj.platform.service;
 
-import cn.hkxj.platform.config.wechat.WechatMpConfiguration;
 import cn.hkxj.platform.pojo.Student;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.error.WxErrorException;
@@ -10,8 +9,11 @@ import me.chanjar.weixin.mp.bean.message.WxMpXmlMessage;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -131,27 +133,28 @@ public class RandomMatchService {
      * @return 是否匹配成功
      */
     public boolean match(String openid, String appid) {
-        Student student = openIdService.getStudentByOpenId(openid, appid);
-        if (checkSex(student)) {
-            if (!womanWaitingSet.isEmpty()) {
-                for (String s : womanWaitingSet) {
-                    matchMap.put(openid, s);
-                    matchMap.put(s, openid);
-                    womanWaitingSet.remove(s);
-                    return true;
-                }
-            }
-        } else {
-            if (!manWaitingSet.isEmpty()) {
-                for (String s : manWaitingSet) {
-                    matchMap.put(openid, s);
-                    matchMap.put(s, openid);
-                    manWaitingSet.remove(s);
-                    return true;
-                }
-            }
-        }
-        return addWaitingList(openid, student);
+//        Student student = openIdService.getStudentByOpenId(openid, appid);
+//        if (checkSex(student)) {
+//            if (!womanWaitingSet.isEmpty()) {
+//                for (String s : womanWaitingSet) {
+//                    matchMap.put(openid, s);
+//                    matchMap.put(s, openid);
+//                    womanWaitingSet.remove(s);
+//                    return true;
+//                }
+//            }
+//        } else {
+//            if (!manWaitingSet.isEmpty()) {
+//                for (String s : manWaitingSet) {
+//                    matchMap.put(openid, s);
+//                    matchMap.put(s, openid);
+//                    manWaitingSet.remove(s);
+//                    return true;
+//                }
+//            }
+//        }
+//        return addWaitingList(openid, student);
+        return true;
     }
 
     /**

@@ -1,7 +1,7 @@
 package cn.hkxj.platform.service.wechat.handler.messageHandler;
 
 import cn.hkxj.platform.builder.TextBuilder;
-import cn.hkxj.platform.pojo.Student;
+import cn.hkxj.platform.pojo.StudentUser;
 import cn.hkxj.platform.pojo.UrpCourse;
 import cn.hkxj.platform.pojo.constant.RedisKeys;
 import cn.hkxj.platform.service.OpenIdService;
@@ -42,10 +42,10 @@ public class CourseRankHandler implements WxMpMessageHandler {
     public WxMpXmlOutMessage handle(WxMpXmlMessage wxMpXmlMessage, Map<String, Object> context, WxMpService wxMpService, WxSessionManager sessionManager) {
         String appId = wxMpService.getWxMpConfigStorage().getAppId();
         String openid = wxMpXmlMessage.getFromUser();
-        Student student = openIdService.getStudentByOpenId(openid, appId);
+        StudentUser student = openIdService.getStudentByOpenId(openid, appId);
 
         HashOperations<String, String, String> hash = redisTemplate.opsForHash();
-        String urpClassCode = hash.get(RedisKeys.URP_CLASS_CODE.getName(), student.getClasses().toString());
+        String urpClassCode = student.getUrpclassNum().toString();
 
         if(StringUtils.isEmpty(urpClassCode)){
             return textBuilder.build("没有查询到你的排名", wxMpXmlMessage, wxMpService);

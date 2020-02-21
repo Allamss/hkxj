@@ -1,8 +1,9 @@
 package cn.hkxj.platform.service;
 
 import cn.hkxj.platform.dao.StudentDao;
+import cn.hkxj.platform.dao.StudentUserDao;
 import cn.hkxj.platform.dao.WechatOpenIdDao;
-import cn.hkxj.platform.pojo.Student;
+import cn.hkxj.platform.pojo.StudentUser;
 import cn.hkxj.platform.pojo.WechatOpenid;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +21,8 @@ public class OpenIdService {
     private WechatOpenIdDao wechatOpenIdDao;
     @Resource
     private StudentDao studentDao;
-
+    @Resource
+    private StudentUserDao studentUserDao;
     /**
      * 已修改并在OpenIdServiceTest里面进行了单元测试
      */
@@ -47,9 +49,9 @@ public class OpenIdService {
     /**
      * 已修改并在OpenIdServiceTest里面进行了单元测试
      */
-    public Student getStudentByOpenId(String appid, String openid) {
+    public StudentUser getStudentByOpenId(String appid, String openid) {
         WechatOpenid wechatOpenid = wechatOpenIdDao.selectByUniqueKey(appid, openid);
-        return studentDao.selectStudentByAccount(wechatOpenid.getAccount());
+        return studentUserDao.selectStudentByAccount(wechatOpenid.getAccount());
 
 
     }

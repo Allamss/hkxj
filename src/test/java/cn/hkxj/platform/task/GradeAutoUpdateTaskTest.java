@@ -1,14 +1,12 @@
 package cn.hkxj.platform.task;
 
 import cn.hkxj.platform.MDCThreadPool;
-import cn.hkxj.platform.config.wechat.MiniProgramProperties;
 import cn.hkxj.platform.config.wechat.WechatMpPlusProperties;
-import cn.hkxj.platform.dao.GradeDao;
 import cn.hkxj.platform.dao.ScheduleTaskDao;
 import cn.hkxj.platform.dao.StudentDao;
 import cn.hkxj.platform.exceptions.UrpException;
 import cn.hkxj.platform.pojo.ScheduleTask;
-import cn.hkxj.platform.pojo.Student;
+import cn.hkxj.platform.pojo.StudentUser;
 import cn.hkxj.platform.pojo.constant.SubscribeScene;
 import cn.hkxj.platform.service.NewGradeSearchService;
 import cn.hkxj.platform.service.OpenIdService;
@@ -20,7 +18,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
-
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.*;
@@ -51,7 +48,7 @@ public class GradeAutoUpdateTaskTest {
         // 2106147
         ScheduleTask task = scheduleTaskDao.selectByOpenid("oCxRO1IyJi3uMaNkkS_QmDuka5w8",
                 wechatMpPlusProperties.getAppId(), SubscribeScene.GRADE_AUTO_UPDATE);
-        Student student = openIdService.getStudentByOpenId(task.getOpenid(), task.getAppid());
+        StudentUser student = openIdService.getStudentByOpenId(task.getOpenid(), task.getAppid());
 
         System.out.println(student);
 //        gradeAutoUpdateTask.processScheduleTask(task);
@@ -73,7 +70,7 @@ public class GradeAutoUpdateTaskTest {
                         UUID uuid = UUID.randomUUID();
                         try {
                             MDC.put("traceId", "gradeUpdateTask-" + uuid.toString());
-                            Student student = openIdService.getStudentByOpenId(task.getOpenid(), task.getAppid());
+                            StudentUser student = openIdService.getStudentByOpenId(task.getOpenid(), task.getAppid());
                             newGradeSearchService.getCurrentTermGradeFromSpider(student);
                         } catch (UrpException e) {
                             log.error("grade update task {} urp exception {}", task, e.getMessage());
@@ -107,8 +104,5 @@ public class GradeAutoUpdateTaskTest {
     @Test
     public void miniProgramUpdateTest() {
 
-
-        Student student = studentDao.selectStudentByAccount(2019020696);
-        gradeAutoUpdateTask.processScheduleTask(student);
     }
 }

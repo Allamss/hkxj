@@ -7,9 +7,10 @@ import cn.hkxj.platform.exceptions.OpenidExistException;
 import cn.hkxj.platform.exceptions.PasswordUnCorrectException;
 import cn.hkxj.platform.exceptions.UrpEvaluationException;
 import cn.hkxj.platform.exceptions.UrpVerifyCodeException;
-import cn.hkxj.platform.pojo.Student;
+import cn.hkxj.platform.pojo.StudentUser;
 import cn.hkxj.platform.pojo.WebResponse;
 import cn.hkxj.platform.pojo.constant.ErrorCode;
+import cn.hkxj.platform.pojo.vo.StudentVo;
 import cn.hkxj.platform.service.OpenIdService;
 import cn.hkxj.platform.service.TeachingEvaluationService;
 import cn.hkxj.platform.service.wechat.StudentBindService;
@@ -27,7 +28,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -127,7 +127,7 @@ public class UserBindingController {
             return WebResponse.fail(ErrorCode.ACCOUNT_OR_PASSWORD_INVALID.getErrorCode(), "账号无效");
         }
 
-        Student student;
+        StudentVo student;
         try {
             if (StringUtils.isEmpty(openid)) {
                 student = studentBindService.studentLogin(account, password);
@@ -173,10 +173,10 @@ public class UserBindingController {
             return WebResponse.fail(ErrorCode.ACCOUNT_OR_PASSWORD_INVALID.getErrorCode(), "账号无效");
         }
 
-        Student student;
+        StudentVo student;
         try {
             student = login(account, password, appid, openid);
-            return getWebResponse(student);
+            return getWebResponse(student.getAccount().toString());
         } catch (UrpVerifyCodeException e) {
             log.info("student bind fail verify code error account:{} password:{} openid:{}", account, password,
                     openid);
@@ -185,8 +185,8 @@ public class UserBindingController {
             log.info("student bind fail Password not correct account:{} password:{} openid:{}", account, password, openid);
             return WebResponse.fail(ErrorCode.ACCOUNT_OR_PASSWORD_INVALID.getErrorCode(), "账号或者密码错误");
         } catch (OpenidExistException e) {
-            student = openIdService.getStudentByOpenId(openid, appid);
-            return getWebResponse(student);
+            StudentUser user = openIdService.getStudentByOpenId(openid, appid);
+            return getWebResponse(user.getAccount().toString());
         } catch (UrpEvaluationException e) {
             // TODO 丑陋
             String appid1 = appid;
@@ -195,7 +195,7 @@ public class UserBindingController {
                 int count = 0;
                 while (count < 4){
                     try {
-                        teachingEvaluationService.evaluateForNotBind(Integer.parseInt(account), password, appid1, openid1);
+
                     }catch (Exception e1){
                         log.info("evaluate fail {}, {}, {}, {}", account, password,
                                 appid1, openid1, e1);
@@ -211,21 +211,21 @@ public class UserBindingController {
 
     }
 
-    private WebResponse getWebResponse(Student student) {
-        if(teachingEvaluationService.hasEvaluate(student.getAccount().toString())){
+    private WebResponse getWebResponse(String account) {
+        if(teachingEvaluationService.hasEvaluate(account)){
             return WebResponse.successWithMessage("你的账号已经评估完成啦");
         }
 
-        if(teachingEvaluationService.isWaitingEvaluate(student.getAccount().toString())){
+        if(teachingEvaluationService.isWaitingEvaluate(account)){
             return WebResponse.successWithMessage("你的账号已经在队列中啦，可以关闭此页面。评估完成会发信息通知你的");
         }
 
-        teachingEvaluationService.addEvaluateAccount(student.getAccount().toString());
+        teachingEvaluationService.addEvaluateAccount(account);
         return WebResponse.successWithMessage("我们很快会为你完成评估，可以关闭此页面。评估完成会发信息通知你的");
     }
 
-    private Student login( String account, String password, String appid, String openid) {
-        Student student;
+    private StudentVo login( String account, String password, String appid, String openid) {
+        StudentVo student;
         if (StringUtils.isEmpty(openid)) {
             student = studentBindService.studentLogin(account, password);
         } else {

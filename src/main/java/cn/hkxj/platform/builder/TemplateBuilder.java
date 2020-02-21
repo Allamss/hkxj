@@ -1,7 +1,6 @@
 package cn.hkxj.platform.builder;
 
-import cn.hkxj.platform.pojo.Grade;
-import cn.hkxj.platform.pojo.Student;
+import cn.hkxj.platform.pojo.StudentUser;
 import cn.hkxj.platform.pojo.vo.GradeVo;
 import cn.hkxj.platform.pojo.wechat.CourseGroupMsg;
 import cn.hkxj.platform.pojo.wechat.CourseSubscriptionMessage;
@@ -11,14 +10,10 @@ import me.chanjar.weixin.mp.bean.template.WxMpTemplateData;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateMessage;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author Syaeldon
@@ -232,7 +227,7 @@ public class TemplateBuilder {
     }
 
 
-    public List<WxMpTemplateData> gradeToTemplateData(Student student, GradeVo grade){
+    public List<WxMpTemplateData> gradeToTemplateData(StudentUser student, GradeVo grade){
         List<WxMpTemplateData> templateDataList = new ArrayList<>();
 
         WxMpTemplateData first = new WxMpTemplateData();

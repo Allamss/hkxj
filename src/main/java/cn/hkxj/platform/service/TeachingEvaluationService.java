@@ -3,10 +3,9 @@ package cn.hkxj.platform.service;
 import cn.hkxj.platform.config.wechat.WechatMpConfiguration;
 import cn.hkxj.platform.config.wechat.WechatMpPlusProperties;
 import cn.hkxj.platform.dao.StudentDao;
-import cn.hkxj.platform.exceptions.OpenidExistException;
-import cn.hkxj.platform.exceptions.PasswordUnCorrectException;
+import cn.hkxj.platform.dao.StudentUserDao;
 import cn.hkxj.platform.mapper.OpenidPlusMapper;
-import cn.hkxj.platform.pojo.Student;
+import cn.hkxj.platform.pojo.StudentUser;
 import cn.hkxj.platform.pojo.constant.RedisKeys;
 import cn.hkxj.platform.pojo.example.OpenidExample;
 import cn.hkxj.platform.pojo.wechat.Openid;
@@ -43,14 +42,16 @@ public class TeachingEvaluationService {
     private StudentBindService studentBindService;
     @Resource
     private StringRedisTemplate stringRedisTemplate;
+    @Resource
+    private StudentUserDao studentUserDao;
 
 
     public int evaluate(String account) {
-        Student student = studentDao.selectStudentByAccount(Integer.parseInt(account));
+        StudentUser student = studentUserDao.selectStudentByAccount(Integer.parseInt(account));
         return evaluate(student);
     }
 
-    public int evaluate(Student student) {
+    public int evaluate(StudentUser student) {
         List<EvaluationPagePost> postList;
         long l = System.currentTimeMillis();
         log.info("start evaluate {}", student);
@@ -74,31 +75,7 @@ public class TeachingEvaluationService {
         return getEvaluationPagePost(student).size();
     }
 
-
-    public int evaluateForNotBind(Integer account, String password){
-        Student student = new Student().setAccount(account).setPassword(password);
-        return evaluate(student);
-    }
-
-    public void evaluateForNotBind(Integer account, String password, String appId, String openid){
-        Student student = new Student().setAccount(account).setPassword(password);
-        try {
-            while (evaluate(student) != 0){
-
-            }
-            sendMessageToOpenId(openid, "评估已完成");
-            studentBindService.studentBind(openid, account.toString(), password ,appId);
-        }catch (OpenidExistException exception){
-            Student studentByOpenId = openIdService.getStudentByOpenId(openid, appId);
-
-        }catch (PasswordUnCorrectException e){
-            sendMessageToOpenId(openid, "密码错误请重试");
-        }
-
-
-    }
-
-    public List<EvaluationPagePost> getEvaluationPagePost(Student student) {
+    public List<EvaluationPagePost> getEvaluationPagePost(StudentUser student) {
         TeachingEvaluation teachingEvaluation = newUrpSpiderService.searchTeachingEvaluationInfo(student);
         return teachingEvaluation.getData().stream()
                 .filter(x -> "否".equals(x.getIsEvaluated()))
@@ -113,7 +90,7 @@ public class TeachingEvaluationService {
     }
 
     public List<EvaluationPagePost> getEvaluationPagePost(String account){
-        Student student = studentDao.selectStudentByAccount(Integer.parseInt(account));
+        StudentUser student = studentUserDao.selectStudentByAccount(Integer.parseInt(account));
         return getEvaluationPagePost(student);
     }
 
