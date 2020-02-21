@@ -35,4 +35,16 @@ public class StudentUserDao {
         return studentUsers.size() > 0;
     }
 
+    public void updatePassword(String account, String password){
+        StudentUser student = new StudentUser();
+        student.setAccount(Integer.parseInt(account));
+        student.setPassword(password);
+        student.setIsCorrect(true);
+
+        StudentUserExample studentExample = new StudentUserExample();
+        studentExample.createCriteria()
+                .andAccountEqualTo(Integer.parseInt(account));
+        studentUserMapper.updateByExampleSelective(student, studentExample);
+    }
+
 }

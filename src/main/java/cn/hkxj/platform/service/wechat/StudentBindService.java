@@ -67,7 +67,7 @@ public class StudentBindService {
 
         StudentVo studentVo = studentLogin(account, password);
 
-        studentBind(studentVo, openid, appid);
+        studentBind(account, openid, appid);
 
         return studentVo;
 
@@ -85,9 +85,9 @@ public class StudentBindService {
         StudentUser student = studentUserDao.selectStudentByAccount(Integer.parseInt(account));
         if (student != null && (!student.getIsCorrect() || !student.getPassword().equals(encrypt(student.getPassword(), account + key)))) {
             newUrpSpiderService.checkStudentPassword(account, enablePassword);
-            studentDao.updatePassword(account, enablePassword);
+            studentUserDao.updatePassword(account, enablePassword);
         } else if (student == null) {
-            student = newUrpSpiderService.getStudentUserInfo(account, enablePassword);
+            student = getStudentUserInfo(account, enablePassword);
             studentUserDao.insertStudentSelective(student);
         }
 
@@ -100,25 +100,25 @@ public class StudentBindService {
      *
      * 否则插入一条新数据再绑定
      *
-     * @param student 学生信息
+     * @param account 学号
      * @param openid  微信用户唯一标识
      * @param appid   微信平台对应的id
      */
-     void studentBind(StudentVo student, String openid, String appid) {
+     void studentBind(String account, String openid, String appid) {
         WechatOpenid wechatOpenid = wechatOpenIdDao.selectByUniqueKey(appid, openid);
         if (wechatOpenid != null) {
-            if (!student.getAccount().equals(wechatOpenid.getAccount())){
+            if (!account.equals(wechatOpenid.getAccount())){
                 wechatOpenIdDao.updateByPrimaryKeySelective(
-                        wechatOpenid.setAccount(student.getAccount()).setGmtModified(new Date()));
+                        wechatOpenid.setAccount(Integer.parseInt(account)).setGmtModified(new Date()));
 
                 wechatBindRecordDao.insertSelective(new WechatBindRecord()
                         .setOriginAccount(wechatOpenid.getAccount().toString())
-                        .setUpdateAccount(student.getAccount().toString())
+                        .setUpdateAccount(account)
                         .setAppid(appid).setOpenid(openid));
             }
         } else {
             wechatOpenIdDao.insertSelective(new WechatOpenid()
-                    .setAccount(student.getAccount())
+                    .setAccount(Integer.parseInt(account))
                     .setOpenid(openid)
                     .setAppid(appid));
         }

@@ -3,7 +3,10 @@ package cn.hkxj.platform.service;
 import cn.hkxj.platform.dao.StudentDao;
 import cn.hkxj.platform.exceptions.PasswordUnCorrectException;
 import cn.hkxj.platform.exceptions.UrpException;
-import cn.hkxj.platform.pojo.*;
+import cn.hkxj.platform.pojo.Classes;
+import cn.hkxj.platform.pojo.Course;
+import cn.hkxj.platform.pojo.Student;
+import cn.hkxj.platform.pojo.StudentUser;
 import cn.hkxj.platform.spider.NewUrpSpider;
 import cn.hkxj.platform.spider.model.UrpStudentInfo;
 import cn.hkxj.platform.spider.newmodel.SearchResult;
@@ -100,13 +103,6 @@ public class NewUrpSpiderService {
         Student student = studentDao.selectStudentByAccount(2014025838);
         NewUrpSpider spider = getSpider(student.getAccount().toString(), student.getPassword());
         return spider.getUrpCourseTimeTableByTeacherAccount(teacherNumber);
-    }
-
-    @Retryable(value = UrpException.class, maxAttempts = 3)
-    public List<List<CourseTimetableSearchResult>> getCourseTimeTableByClassroom(UrpClassroom urpClassroom) {
-        Student student = studentDao.selectStudentByAccount(2014025838);
-        NewUrpSpider spider = getSpider(student.getAccount().toString(), student.getPassword());
-        return spider.getUrpCourseTimeTableByClassroomNum(urpClassroom);
     }
 
     @Retryable(value = UrpException.class, maxAttempts = 3)

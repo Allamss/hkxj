@@ -1,11 +1,10 @@
 package cn.hkxj.platform.service;
 
 import cn.hkxj.platform.PlatformApplication;
-import cn.hkxj.platform.dao.CourseDao;
-import cn.hkxj.platform.dao.CourseTimeTableDao;
-import cn.hkxj.platform.dao.CourseTimeTableDetailDao;
 import cn.hkxj.platform.dao.StudentDao;
+import cn.hkxj.platform.dao.StudentUserDao;
 import cn.hkxj.platform.pojo.Student;
+import cn.hkxj.platform.pojo.StudentUser;
 import cn.hkxj.platform.spider.newmodel.course.UrpCourseForSpider;
 import cn.hkxj.platform.spider.newmodel.evaluation.EvaluationPagePost;
 import cn.hkxj.platform.spider.newmodel.evaluation.EvaluationPost;
@@ -34,21 +33,13 @@ public class NewUrpSpiderServiceTest {
     @Resource
     private NewUrpSpiderService newUrpSpiderService;
     @Resource
-    private NewGradeSearchService newGradeSearchService;
-    @Resource
     private StudentDao studentDao;
     @Resource
-    private CourseDao courseDao;
-    @Resource
-    private CourseTimeTableDetailDao courseTimeTableDetailDao;
-    @Resource
-    private CourseTimeTableDao courseTimeTableDao;
-
-
+    private StudentUserDao studentUserDao;
 
     @Test
     public void getExamTime(){
-        Student student = studentDao.selectStudentByAccount(2019020856);
+        StudentUser student = studentUserDao.selectStudentByAccount(2019020856);
 
         List<UrpExamTime> examTime = newUrpSpiderService.getExamTime(student);
 
@@ -61,7 +52,7 @@ public class NewUrpSpiderServiceTest {
 
     @Test
     public void getCurrentTermGrade(){
-        Student student = studentDao.selectStudentByAccount(2017025838);
+        StudentUser student = studentUserDao.selectStudentByAccount(2017025838);
         CompletableFuture.runAsync(() -> newUrpSpiderService.getCurrentGeneralGrade(student));
         newUrpSpiderService.getCurrentGeneralGrade(student);
 
@@ -70,13 +61,11 @@ public class NewUrpSpiderServiceTest {
 
     @Test
     public void getCurrentGeneralGrade(){
-        Student student = studentDao.selectStudentByAccount(2018024221);
+        StudentUser student = studentUserDao.selectStudentByAccount(2018024221);
 
         for (UrpGeneralGradeForSpider grade : newUrpSpiderService.getCurrentGeneralGrade(student)) {
             System.out.println(grade);
         }
-
-
 
     }
 
@@ -117,13 +106,13 @@ public class NewUrpSpiderServiceTest {
 
     @Test
     public void searchTeachingEvaluationInfo(){
-        Student student = studentDao.selectStudentByAccount(2016024255);
+        StudentUser student = studentUserDao.selectStudentByAccount(2016024255);
         newUrpSpiderService.searchTeachingEvaluationInfo(student);
     }
 
     @Test
     public void evaluate(){
-        Student student = studentDao.selectStudentByAccount(2016024255);
+        StudentUser student = studentUserDao.selectStudentByAccount(2016024255);
         EvaluationPost post = new EvaluationPost()
                 .setTokenValue("1234568")
                 .setEvaluatedPeopleNumber("1999801257")
@@ -134,7 +123,7 @@ public class NewUrpSpiderServiceTest {
 
     @Test
     public void getEvaluationToken(){
-        Student student = studentDao.selectStudentByAccount(2016024255);
+        StudentUser student = studentUserDao.selectStudentByAccount(2016024255);
         EvaluationPagePost post = new EvaluationPagePost()
                 .setEvaluatedPeople("孙昌立")
                 .setEvaluatedPeopleNumber("1999801257")
