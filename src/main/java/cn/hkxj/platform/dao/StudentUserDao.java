@@ -13,10 +13,10 @@ public class StudentUserDao {
     @Resource
     private StudentUserMapper studentUserMapper;
 
-    public List<StudentUser> selectStudentByAccount(int account){
+    public StudentUser selectStudentByAccount(int account){
         StudentUserExample studentUserExample = new StudentUserExample();
         studentUserExample.createCriteria().andAccountEqualTo(account);
-        return studentUserMapper.selectByExample(studentUserExample);
+        return studentUserMapper.selectByExample(studentUserExample).stream().findFirst().orElse(null);
     }
 
     public List<StudentUser> selectAllStudent(){

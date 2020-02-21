@@ -2,10 +2,10 @@ package cn.hkxj.platform.service;
 
 import cn.hkxj.platform.PlatformApplication;
 import cn.hkxj.platform.dao.CourseTimeTableDao;
-import cn.hkxj.platform.dao.StudentDao;
+import cn.hkxj.platform.dao.StudentUserDao;
 import cn.hkxj.platform.dao.UrpClassRoomDao;
 import cn.hkxj.platform.pojo.CourseTimetable;
-import cn.hkxj.platform.pojo.Student;
+import cn.hkxj.platform.pojo.StudentUser;
 import cn.hkxj.platform.pojo.UrpClassroom;
 import cn.hkxj.platform.pojo.vo.CourseTimeTableVo;
 import cn.hkxj.platform.spider.newmodel.coursetimetable.UrpCourseTimeTableForSpider;
@@ -33,7 +33,7 @@ public class CourseTimeTableServiceTest {
     @Resource
     private CourseTimeTableService courseTimeTableService;
     @Resource
-    private StudentDao studentDao;
+    private StudentUserDao studentUserDao;
     @Resource
     private CourseTimeTableDao courseTimeTableDao;
     @Resource
@@ -42,7 +42,7 @@ public class CourseTimeTableServiceTest {
 
     @Test
     public void getCourseTimeTableByStudent() {
-        Student student = studentDao.selectStudentByAccount(2017021881);
+        StudentUser student = studentUserDao.selectStudentByAccount(2017022846);
         for (CourseTimeTableVo courseTimeTableVo : courseTimeTableService.getCurrentTermCourseTimeTableByStudent(student)) {
             System.out.println(courseTimeTableVo);
         }
@@ -72,7 +72,7 @@ public class CourseTimeTableServiceTest {
 
     @Test
     public void getCourseTimeTableByStudentFromSpider() {
-        Student student = studentDao.selectStudentByAccount(2017023742);
+        StudentUser student = studentUserDao.selectStudentByAccount(2017021881);
         for (CourseTimeTableVo vo : courseTimeTableService.getCourseTimeTableByStudentFromSpider(student)) {
             System.out.println(vo);
         }
@@ -98,10 +98,11 @@ public class CourseTimeTableServiceTest {
     @Test
     public void fixErrorData() {
         // 按学生分好组，然后再进行抓取
-        UrpCourseTimeTableForSpider details = courseTimeTableService.getCourseTimeTableDetails(studentDao.selectStudentByAccount(2017023742));
+        StudentUser student = studentUserDao.selectStudentByAccount(2017021881);
+        UrpCourseTimeTableForSpider details = courseTimeTableService.getCourseTimeTableDetails(student);
         List<CourseTimetable> collect = details.adaptToList().stream().filter(CourseTimetable::isCurrentTerm).collect(Collectors.toList());
 
-        courseTimeTableService.transCourseTimeTableToVo(collect);
+        System.out.println(collect);
 
 
     }

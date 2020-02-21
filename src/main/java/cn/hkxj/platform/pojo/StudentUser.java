@@ -1,5 +1,6 @@
 package cn.hkxj.platform.pojo;
 
+import cn.hkxj.platform.utils.DESUtil;
 import lombok.Data;
 
 import java.util.Date;
@@ -31,4 +32,9 @@ public class StudentUser {
     private String subjectName;
 
     private String className;
+
+
+    public String getEnablePassword(String key) {
+        return DESUtil.decrypt(this.password, key);
+    }
 }
