@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author junrong.chen
@@ -118,25 +119,39 @@ public class ExamTimeTableService {
                             .setSchoolWek(x.getExamWeekOfTerm()))
                     .collect(Collectors.toList());
             try {
-                saveExamTimeTable(account, list);
+//                saveExamTimeTable(account, list);
             } catch (Exception e) {
                 log.error("save exam timetable error", e);
             }
             return examList;
 
         } else {
-            return currentTermExam.stream()
-                    .map(x -> new Exam()
-                            .setCourse(
-                                    urpCourseService.getCurrentTermCourse(x.getCourseNum(), x.getCourseOrder(),
-                                            new Course().setCourseOrder(x.getCourseOrder())))
-                            .setDate(x.getExamDate())
-                            .setExamName(x.getName())
-                            .setStartTime(x.getStartTime())
-                            .setEndTime(x.getEndTime())
-                            .setClassRoom(roomService.getClassRoomByName(x.getRoomName()))
-                            .setExamDay(x.getDay())
-                            .setExamWeekOfTerm(x.getSchoolWek()))
+            Stream<ExamTimetable> stream = currentTermExam.stream();
+
+
+            return stream
+                    .map(x -> {
+                        Exam exam = new Exam()
+                                .setDate(x.getExamDate())
+                                .setExamName(x.getName())
+                                .setStartTime(x.getStartTime())
+                                .setEndTime(x.getEndTime())
+                                .setClassRoom(roomService.getClassRoomByName(x.getRoomName()))
+                                .setExamDay(x.getDay())
+                                .setExamWeekOfTerm(x.getSchoolWek());
+
+                        if (exam.getExamName().contains("开学补考")){
+                            Course course = urpCourseService.getCourse(x.getCourseNum(), x.getCourseNum(), "2019-2020", 1, null);
+                            exam.setCourse(course);
+                        }else {
+
+                            Course course = urpCourseService.getCurrentTermCourse(x.getCourseNum(), x.getCourseOrder(),
+                                    new Course().setCourseOrder(x.getCourseOrder()));
+                            exam.setCourse(course);
+                        }
+
+                        return exam;
+                    })
                     .collect(Collectors.toList());
         }
     }
@@ -168,7 +183,7 @@ public class ExamTimeTableService {
 
     private Course getCourseFromExamText(String examText) {
 
-        String pattern = "（(.*?)-(.*?)）(.*?)";
+        String pattern = "（(.*?)-(.*?)）(.*)";
         // 创建 Pattern 对象
         Pattern r = Pattern.compile(pattern);
 
@@ -179,7 +194,7 @@ public class ExamTimeTableService {
             String num = m.group(1);
             String order = m.group(2);
             String courseName = m.group(3);
-            Course course = urpCourseService.getCurrentTermCourse(num, order, new Course().setCourseOrder(order));
+            Course course = new Course().setCourseOrder(order).setName(courseName).setNum(num);
             if (course == null) {
                 log.error("can not find course {} {}", num, order);
             }
