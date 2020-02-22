@@ -245,7 +245,6 @@
             <version>${mybatis.dynamic.sql.version}</version>
         </dependency>
 
-
     </dependencies>
 
     <profiles>
