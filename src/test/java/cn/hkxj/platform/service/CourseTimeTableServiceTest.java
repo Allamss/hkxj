@@ -42,7 +42,7 @@ public class CourseTimeTableServiceTest {
 
     @Test
     public void getCourseTimeTableByStudent() {
-        StudentUser student = studentUserDao.selectStudentByAccount(2017022846);
+        StudentUser student = studentUserDao.selectStudentByAccount(2017026003);
         for (CourseTimeTableVo courseTimeTableVo : courseTimeTableService.getCurrentTermCourseTimeTableByStudent(student)) {
             System.out.println(courseTimeTableVo);
         }
@@ -110,7 +110,7 @@ public class CourseTimeTableServiceTest {
     @Test
     public void getCurrentTermCourseTimetableByClass() {
         // 按学生分好组，然后再进行抓取
-        List<CourseTimetable> timetable = courseTimeTableService.getCurrentTermCourseTimetableByClass("2016080008");
+        List<CourseTimetable> timetable = courseTimeTableService.getCurrentTermCourseTimetableByClass("2017140005");
         for (CourseTimetable courseTimetable : timetable) {
             System.out.println(courseTimetable);
         }

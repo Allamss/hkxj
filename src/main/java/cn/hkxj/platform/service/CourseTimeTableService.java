@@ -133,10 +133,15 @@ public class CourseTimeTableService {
                 List<CourseTimetable> current = list.stream()
                         .filter(CourseTimetable::isCurrentTerm)
                         .collect(Collectors.toList());
+                // 这里先检查一下抓到的课表是不是这个学期的  不是的话读取班级本学期的课表
+                // 这样做的目的是  班级课表会比个人的课表先发布
                 if (!CollectionUtils.isEmpty(current)){
                     saveCourseTimeTableDetailsFromSearch(current, student.getAccount());
+                    return transCourseTimeTableToVo(list);
+                }else {
+                    return getCurrentTermCourseTimetableVOByClazz(student);
                 }
-                return transCourseTimeTableToVo(list);
+
             }
 
         } catch (UrpRequestException | InterruptedException | ExecutionException | TimeoutException e) {
