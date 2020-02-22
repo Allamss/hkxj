@@ -42,7 +42,7 @@ public class CourseTimeTableServiceTest {
 
     @Test
     public void getCourseTimeTableByStudent() {
-        StudentUser student = studentUserDao.selectStudentByAccount(2017026003);
+        StudentUser student = studentUserDao.selectStudentByAccount(2019030460);
         for (CourseTimeTableVo courseTimeTableVo : courseTimeTableService.getCurrentTermCourseTimeTableByStudent(student)) {
             System.out.println(courseTimeTableVo);
         }

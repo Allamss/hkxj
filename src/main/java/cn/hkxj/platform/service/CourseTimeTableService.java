@@ -312,7 +312,7 @@ public class CourseTimeTableService {
             List<CourseTimetable> selectBatch = courseTimeTableDao.selectBatch(spiderResult);
             try {
                 if (spiderResult.size() == selectBatch.size()){
-                    List<ClassCourseTimetable> collect = spiderResult.stream()
+                    List<ClassCourseTimetable> collect = selectBatch.stream()
                             .map(x -> x.getClassRelative(classNum))
                             .collect(Collectors.toList());
                     classCourseTimetableDao.insertBatch(collect);
