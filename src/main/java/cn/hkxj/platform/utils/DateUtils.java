@@ -1,36 +1,27 @@
 package cn.hkxj.platform.utils;
-
 import cn.hkxj.platform.pojo.SchoolTime;
 import cn.hkxj.platform.pojo.Term;
 import cn.hkxj.platform.pojo.constant.RedisKeys;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.CharUtils;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * @author Yuki
  * @date 2018/11/5 23:22
  */
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
-@WebAppConfiguration
 @Slf4j
 @Component
 public class DateUtils {
@@ -65,12 +56,11 @@ public class DateUtils {
      *  学期开始时间存入redis，可动态配置
      */
     public static   void  setTermStart(String termStart)  {
-        stringRedisTemplate.opsForValue().set(RedisKeys.TERM_STARY.getName(),termStart);
-
+        stringRedisTemplate.opsForValue().set(RedisKeys.TERM_START.getName(),termStart);
     }
 
     public static    String getTermStart()  {
-        return stringRedisTemplate.opsForValue().get(RedisKeys.TERM_STARY.getName());
+        return stringRedisTemplate.opsForValue().get(RedisKeys.TERM_START.getName());
     }
 
 
@@ -174,17 +164,10 @@ public class DateUtils {
         return (byte) (getCurrentWeek() % 2 == 0 ? 1 : 2);
     }
 
-    @Test
-    public   void demo(){
+    public static void main(String[] args) {
         Date date = localDateToDate("20191105102840", PATTERN_WITHOUT_SPILT);
         System.out.println(date);
         System.out.println(dateToChinese(date));
-        String s="2019-8-26";
-        setTermStart(s);
-        System.out.println(getTermStart());
-        Term term=new Term(2000,2001,1);
-        setSchoolTime(term);
-        System.out.println(getCurrentSchoolTime());
-
     }
+
 }

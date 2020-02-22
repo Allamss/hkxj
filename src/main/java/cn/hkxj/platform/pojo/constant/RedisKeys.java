@@ -11,7 +11,7 @@ public enum RedisKeys {
     /**
      *   学期开学时间
      */
-    TERM_STARY("TERM_STARY"),
+    TERM_START("TERM_START"),
 
     TERM("TERM"),
 
