@@ -339,6 +339,8 @@ public class CourseTimeTableService {
                 return spiderResult;
             }
 
+            return  spiderResult;
+
         }
         return timetableList;
     }
