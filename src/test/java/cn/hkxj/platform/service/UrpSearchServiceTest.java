@@ -6,7 +6,6 @@ import cn.hkxj.platform.mapper.ClassCourseTimetableMapper;
 import cn.hkxj.platform.mapper.TeacherCourseMapper;
 import cn.hkxj.platform.mapper.TeacherCourseTimetableMapper;
 import cn.hkxj.platform.pojo.*;
-import cn.hkxj.platform.spider.newmodel.searchclass.ClassInfoSearchResult;
 import cn.hkxj.platform.spider.newmodel.searchclass.CourseTimetableSearchResult;
 import cn.hkxj.platform.spider.newmodel.searchclass.SearchClassInfoPost;
 import cn.hkxj.platform.spider.newmodel.searchclassroom.SearchClassroomResult;
@@ -18,7 +17,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @RunWith(SpringRunner.class)
@@ -69,15 +70,15 @@ public class UrpSearchServiceTest {
         SearchClassInfoPost post = new SearchClassInfoPost();
         post.setYearNum("2014");
         post.setExecutiveEducationPlanNum("2014-2015-1-1");
-        List<ClassInfoSearchResult> searchResults = urpSearchService.searchUrpClass(post);
-        Map<String, UrpClass> collect = searchResults.stream()
-                .map(ClassInfoSearchResult::transToUrpClass)
-                .collect(Collectors.toMap(UrpClass::getClassName, x -> x, (oldVal, newVal) -> {
-                    System.out.println(oldVal);
-                    System.out.println(newVal);
-                    return newVal;
-                }));
-        urpClassDao.insertBatch(new ArrayList<>(collect.values()));
+//        List<ClassInfoSearchResult> searchResults = urpSearchService.searchUrpClass(post);
+//        Map<String, UrpClass> collect = searchResults.stream()
+//                .map(ClassInfoSearchResult::transToUrpClass)
+//                .collect(Collectors.toMap(UrpClass::getClassName, x -> x, (oldVal, newVal) -> {
+//                    System.out.println(oldVal);
+//                    System.out.println(newVal);
+//                    return newVal;
+//                }));
+//        urpClassDao.insertBatch(new ArrayList<>(collect.values()));
 
     }
 
@@ -96,6 +97,18 @@ public class UrpSearchServiceTest {
                 urpClassRoomDao.insertSelective(result.transToUrpClassRoom());
             }
         }
+
+    }
+
+    @Test
+    public void searchCourse() {
+        List<CourseTimetable> list = urpSearchService.searchCourse("2019-2020", 2, "2016080008");
+        courseTimeTableDao.insertBatch(list);
+
+        for (CourseTimetable timetable : list) {
+            System.out.println(timetable);
+        }
+
 
     }
 
@@ -191,6 +204,12 @@ public class UrpSearchServiceTest {
             classCourseMapper.insertSelective(classCourse);
         }
 
+
+    }
+
+    @Test
+    public void save() {
+        urpSearchService.saveCurrentClassTimetable();
 
     }
 }

@@ -28,4 +28,6 @@ public interface CourseTimetableExtMapper extends CourseTimetableMapper {
      * @return 班级对应课程信息
      */
     List<CourseTimetable> selectByClassRelative(ClassCourseTimetable relative);
+
+    void insertBatch(List<CourseTimetable> list);
 }

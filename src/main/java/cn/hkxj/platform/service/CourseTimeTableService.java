@@ -11,6 +11,7 @@ import cn.hkxj.platform.utils.DateUtils;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -18,6 +19,7 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.Resource;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 
 /**
@@ -32,13 +34,11 @@ public class CourseTimeTableService {
     @Resource
     private RoomService roomService;
     @Resource
-    private StudentDao studentDao;
-    @Resource
     private UrpCourseService urpCourseService;
     @Resource
     private NewUrpSpiderService newUrpSpiderService;
     @Resource
-    private ClassService classService;
+    private UrpSearchService urpSearchService;
     @Resource
     private CourseTimeTableDao courseTimeTableDao;
     @Resource
@@ -51,9 +51,13 @@ public class CourseTimeTableService {
     private UrpClassDao urpClassDao;
     @Resource
     private StudentUserDao studentUserDao;
+    @Resource
+    private ClassCourseTimetableDao classCourseTimetableDao;
 
     private Executor courseSpiderExecutor = new MDCThreadPool(7, 7, 0L, TimeUnit.SECONDS,
             new LinkedBlockingQueue<>(), r -> new Thread(r, "courseSpider"));
+
+    private ConcurrentMap<String, Lock> classLock = new ConcurrentHashMap<>();
 
     /**
      * 这个方法只能将一天的数据转换成当日课表所需要的文本
@@ -291,13 +295,30 @@ public class CourseTimeTableService {
             return Collections.emptyList();
         }
 
-        SchoolTime schoolTime = DateUtils.getCurrentSchoolTime();
+        Term term = DateUtils.getCurrentSchoolTime().getTerm();
         ClassCourseTimetable relative = new ClassCourseTimetable()
                 .setClassId(classNum)
-                .setTermYear(schoolTime.getTerm().getTermYear())
-                .setTermOrder(schoolTime.getTerm().getOrder());
+                .setTermYear(term.getTermYear())
+                .setTermOrder(term.getOrder());
+        List<CourseTimetable> timetableList = courseTimeTableDao.selectByClassRelative(relative);
+        if(CollectionUtils.isEmpty(timetableList)){
 
-        return courseTimeTableDao.selectByClassRelative(relative);
+            List<CourseTimetable> list = urpSearchService.searchCourse(term.getTermYear(), term.getOrder(), classNum);
+            try {
+                courseTimeTableDao.insertBatch(list);
+                List<ClassCourseTimetable> collect = list.stream().map(x -> new ClassCourseTimetable()
+                        .setClassId(classNum)
+                        .setCourseTimetableId(x.getId())
+                        .setTermOrder(x.getTermOrder())
+                        .setTermYear(x.getTermYear())
+                ).collect(Collectors.toList());
+                classCourseTimetableDao.insertBatch(collect);
+            }catch (DuplicateKeyException e){
+                return list;
+            }
+        }
+
+        return timetableList;
     }
 
     List<CourseTimetable> getCurrentTermCourseTimetableByClass(UrpClass urpClass) {

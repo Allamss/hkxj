@@ -86,9 +86,10 @@ public class NewUrpSpiderService {
     }
 
     @Retryable(value = UrpException.class, maxAttempts = 3)
-    public List<List<CourseTimetableSearchResult>> searchClassTimeTable(String account, String password, String classCode) {
-        NewUrpSpider spider = getSpider(account, password);
-        return spider.getUrpCourseTimeTableByClassCode(classCode);
+    public List<List<CourseTimetableSearchResult>> searchClassTimeTable(String termYear, int termOrder, String classCode) {
+        Student student = studentDao.selectStudentByAccount(2014025838);
+        NewUrpSpider spider = getSpider(student.getAccount().toString(), student.getPassword());
+        return spider.getUrpCourseTimeTableByClassCode(termYear, termOrder, classCode);
     }
 
     @Retryable(value = UrpException.class, maxAttempts = 3)

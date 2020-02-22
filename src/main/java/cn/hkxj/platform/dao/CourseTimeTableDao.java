@@ -5,6 +5,7 @@ import cn.hkxj.platform.pojo.ClassCourseTimetable;
 import cn.hkxj.platform.pojo.CourseTimetable;
 import cn.hkxj.platform.pojo.StudentCourseTimeTable;
 import cn.hkxj.platform.pojo.example.CourseTimetableExample;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -102,6 +103,13 @@ public class CourseTimeTableDao {
 
     public void insertSelective(CourseTimetable courseTimetable) {
         courseTimetableExtMapper.insertSelective(courseTimetable);
+    }
+
+    public void insertBatch(List<CourseTimetable> list) {
+        if(CollectionUtils.isEmpty(list)){
+            return;
+        }
+        courseTimetableExtMapper.insertBatch(list);
     }
 
     public void updateByPrimaryKeySelective(CourseTimetable courseTimetable) {

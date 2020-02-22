@@ -7,7 +7,6 @@ import cn.hkxj.platform.pojo.SchoolTime;
 import cn.hkxj.platform.pojo.UrpCourse;
 import cn.hkxj.platform.spider.newmodel.SearchResult;
 import cn.hkxj.platform.spider.newmodel.course.UrpCourseForSpider;
-import cn.hkxj.platform.spider.newmodel.searchclass.CourseTimetableSearchResult;
 import cn.hkxj.platform.spider.newmodel.searchcourse.SearchCoursePost;
 import cn.hkxj.platform.spider.newmodel.searchcourse.SearchCourseResult;
 import cn.hkxj.platform.utils.DateUtils;
@@ -141,29 +140,6 @@ public class UrpCourseService {
             return course;
         }
         return courseList.stream().findFirst().get();
-    }
-
-
-    public void getTimetable(String courseId, String sequenceNumber, String termYear, int termOrder) {
-        List<Course> courseList = courseDao.selectCourseByPojo(
-                new Course()
-                        .setNum(courseId)
-                        .setCourseOrder(sequenceNumber)
-                        .setTermYear(termYear)
-                        .setTermOrder(termOrder));
-
-        if (courseList.size() == 0) {
-            SearchCoursePost post = new SearchCoursePost();
-            post.setCourseNumber(courseId).setCourseOrderNumber(sequenceNumber);
-            post.setExecutiveEducationPlanNum(termYear + "-" + termOrder + "-1");
-            SearchResult<SearchCourseResult> searchResult = newUrpSpiderService.searchCourseInfo(post);
-            searchResult.getRecords().stream()
-                    .flatMap(x -> urpSearchService.searchTimetableByCourse(x.transToCourse()).stream())
-                    .map(CourseTimetableSearchResult::transToCourseTimetable)
-                    .collect(Collectors.toList());
-
-
-        }
     }
 
     /**

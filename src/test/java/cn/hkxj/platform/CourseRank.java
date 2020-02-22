@@ -19,7 +19,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -64,7 +65,7 @@ public class CourseRank {
 
                         String classNum = record.getId().getClassNum();
                         HashSet<UrpCourse> set = new HashSet<>();
-                        for (List<CourseTimetableSearchResult> resultList : newUrpSpiderService.searchClassTimeTable("2014025838", "1", classNum)) {
+                        for (List<CourseTimetableSearchResult> resultList : newUrpSpiderService.searchClassTimeTable("2019-2020",1, classNum)) {
 
                             for (CourseTimetableSearchResult result : resultList) {
                                 UrpCourse course = urpCourseService.getUrpCourseByCourseId(result.getId().getCourseId());

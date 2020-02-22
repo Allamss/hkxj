@@ -46,8 +46,7 @@ public class NewUrpSpiderServiceTest {
         for (UrpExamTime urpExamTime : examTime) {
             System.out.println(urpExamTime);
         }
-
-
+        
     }
 
     @Test
@@ -98,9 +97,6 @@ public class NewUrpSpiderServiceTest {
         for (MxGradeDetail mx : detail.getMx()) {
             System.out.println(mx);
         }
-
-//        System.out.println(detail);
-
 
     }
 

@@ -68,9 +68,8 @@ public class ClassService {
                 int end = Integer.parseInt(start) + 1;
                 post.setYearNum(start);
                 post.setExecutiveEducationPlanNum(start + "-"+ end + "-1-1");
-                List<ClassInfoSearchResult> results = urpSearchService.searchUrpClass(post);
+                List<UrpClass> results = urpSearchService.searchUrpClass(post);
                 Map<String, UrpClass> collect = results.stream()
-                        .map(ClassInfoSearchResult::transToUrpClass)
                         .collect(Collectors.toMap(UrpClass::getClassName, x -> x));
 
                 classCache.putAll(collect);

@@ -602,10 +602,11 @@ public class NewUrpSpider {
      *
      * @param classCode 教务网的班级号
      */
-    public List<List<CourseTimetableSearchResult>> getUrpCourseTimeTableByClassCode(String classCode) {
-
+    public List<List<CourseTimetableSearchResult>> getUrpCourseTimeTableByClassCode(String termYear, int termOrder, String classCode) {
+        String url = SEARCH_COURSE_INFO + "?planCode=%s-%s-1&classCode=%s";
+        String format = String.format(url, termYear, termOrder, classCode);
         Request request = new Request.Builder()
-                .url(SEARCH_COURSE_INFO + "?planCode=2019-2020-1-1&classCode=" + classCode)
+                .url(format)
                 .headers(HEADERS)
                 .get()
                 .build();

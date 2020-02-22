@@ -78,4 +78,34 @@
         </where>
 
     </select>
+
+    <insert id="insertBatch" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
+        insert into course_timetable
+        (<include refid="cn.hkxj.platform.mapper.CourseTimetableMapper.Base_Column_List"/>)
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.id,jdbcType=INTEGER},
+            #{item.roomName,jdbcType=VARCHAR},
+            #{item.roomNumber,jdbcType=VARCHAR},
+            #{item.campusName,jdbcType=VARCHAR},
+            #{item.continuingSession,jdbcType=INTEGER},
+            #{item.courseId,jdbcType=VARCHAR},
+            #{item.attendClassTeacher,jdbcType=VARCHAR},
+            #{item.studentCount,jdbcType=INTEGER},
+            #{item.classDay,jdbcType=INTEGER},
+            #{item.classOrder,jdbcType=INTEGER},
+            #{item.startWeek,jdbcType=INTEGER},
+            #{item.endWeek,jdbcType=INTEGER},
+            #{item.classInSchoolWeek,jdbcType=VARCHAR},
+            #{item.courseSequenceNumber,jdbcType=VARCHAR},
+            #{item.weekDescription,jdbcType=VARCHAR},
+            #{item.classDistinct,jdbcType=INTEGER},
+            #{item.termYear,jdbcType=CHAR},
+            #{item.termOrder,jdbcType=INTEGER},
+            #{item.gmtCreate,jdbcType=TIMESTAMP}
+            )
+        </foreach>
+
+    </insert>
 </mapper>
