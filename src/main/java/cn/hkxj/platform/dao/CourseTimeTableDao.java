@@ -123,4 +123,11 @@ public class CourseTimeTableDao {
 
         courseTimetableExtMapper.updateByExampleSelective(courseTimetable, example);
     }
+
+    public List<CourseTimetable> selectBatch(List<CourseTimetable> list){
+        if(CollectionUtils.isEmpty(list)){
+            return list;
+        }
+        return courseTimetableExtMapper.selectBatch(list);
+    }
 }

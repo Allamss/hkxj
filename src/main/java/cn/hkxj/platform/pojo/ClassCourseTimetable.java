@@ -16,4 +16,6 @@ public class ClassCourseTimetable {
 
     private Integer termOrder;
 
+
+
 }

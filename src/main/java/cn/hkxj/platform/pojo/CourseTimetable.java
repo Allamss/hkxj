@@ -60,4 +60,12 @@ public class CourseTimetable {
                 getTermYear().equals(term.getTermYear());
     }
 
+    public ClassCourseTimetable getClassRelative(String classNum){
+        return new ClassCourseTimetable()
+                .setClassId(classNum)
+                .setCourseTimetableId(getId())
+                .setTermOrder(getTermOrder())
+                .setTermYear(getTermYear());
+    }
+
 }

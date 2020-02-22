@@ -30,4 +30,6 @@ public interface CourseTimetableExtMapper extends CourseTimetableMapper {
     List<CourseTimetable> selectByClassRelative(ClassCourseTimetable relative);
 
     void insertBatch(List<CourseTimetable> list);
+
+    List<CourseTimetable> selectBatch(List<CourseTimetable> list);
 }

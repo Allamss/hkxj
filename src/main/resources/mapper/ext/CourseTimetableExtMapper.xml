@@ -108,4 +108,24 @@
         </foreach>
 
     </insert>
+
+    <select id="selectBatch" parameterType="java.util.List" resultMap="cn.hkxj.platform.mapper.CourseTimetableMapper.BaseResultMap">
+        select
+        <include refid="cn.hkxj.platform.mapper.CourseTimetableMapper.Base_Column_List"/>
+        from
+        (
+        <foreach collection="list" item="item" index="index" separator="union all">
+            SELECT <include refid="cn.hkxj.platform.mapper.CourseTimetableMapper.Base_Column_List"/> FROM course_timetable
+            WHERE course_id = #{item.courseId,jdbcType=VARCHAR} and
+            class_day = #{item.classDay,jdbcType=INTEGER} and
+            class_order = #{item.classOrder,jdbcType=INTEGER} and
+            start_week = #{item.startWeek,jdbcType=INTEGER} and
+            end_week = #{item.endWeek,jdbcType=INTEGER} and
+            course_sequence_number = #{item.courseSequenceNumber,jdbcType=VARCHAR} and
+            term_year = #{item.termYear,jdbcType=CHAR} and
+            term_order = #{item.termOrder,jdbcType=INTEGER}
+        </foreach>
+        ) as ct
+
+    </select>
 </mapper>

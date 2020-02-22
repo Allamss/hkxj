@@ -308,21 +308,35 @@ public class CourseTimeTableService {
         List<CourseTimetable> timetableList = courseTimeTableDao.selectByClassRelative(relative);
         if(CollectionUtils.isEmpty(timetableList)){
 
-            List<CourseTimetable> list = urpSearchService.searchCourse(term.getTermYear(), term.getOrder(), classNum);
+            List<CourseTimetable> spiderResult = urpSearchService.searchCourse(term.getTermYear(), term.getOrder(), classNum);
+            List<CourseTimetable> selectBatch = courseTimeTableDao.selectBatch(spiderResult);
             try {
-                courseTimeTableDao.insertBatch(list);
-                List<ClassCourseTimetable> collect = list.stream().map(x -> new ClassCourseTimetable()
-                        .setClassId(classNum)
-                        .setCourseTimetableId(x.getId())
-                        .setTermOrder(x.getTermOrder())
-                        .setTermYear(x.getTermYear())
-                ).collect(Collectors.toList());
-                classCourseTimetableDao.insertBatch(collect);
-            }catch (DuplicateKeyException e){
-                return list;
-            }
-        }
+                if (spiderResult.size() == selectBatch.size()){
+                    List<ClassCourseTimetable> collect = spiderResult.stream()
+                            .map(x -> x.getClassRelative(classNum))
+                            .collect(Collectors.toList());
+                    classCourseTimetableDao.insertBatch(collect);
+                }else {
 
+                    HashSet<CourseTimetable> batchSet = new HashSet<>(selectBatch);
+
+                    List<CourseTimetable> rest = spiderResult.stream()
+                            .filter(x -> !batchSet.contains(x))
+                            .collect(Collectors.toList());
+                    courseTimeTableDao.insertBatch(rest);
+
+                    List<ClassCourseTimetable> collect = batchSet.stream()
+                            .map(x -> x.getClassRelative(classNum))
+                            .collect(Collectors.toList());
+                    collect.addAll(rest.stream().map(x-> x.getClassRelative(classNum)).collect(Collectors.toList()));
+                    classCourseTimetableDao.insertBatch(collect);
+
+                }
+            }catch (DuplicateKeyException e){
+                return spiderResult;
+            }
+
+        }
         return timetableList;
     }
 

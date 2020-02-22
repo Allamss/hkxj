@@ -110,7 +110,7 @@ public class CourseTimeTableServiceTest {
     @Test
     public void getCurrentTermCourseTimetableByClass() {
         // 按学生分好组，然后再进行抓取
-        List<CourseTimetable> timetable = courseTimeTableService.getCurrentTermCourseTimetableByClass("2017140005");
+        List<CourseTimetable> timetable = courseTimeTableService.getCurrentTermCourseTimetableByClass("2017100001");
         for (CourseTimetable courseTimetable : timetable) {
             System.out.println(courseTimetable);
         }

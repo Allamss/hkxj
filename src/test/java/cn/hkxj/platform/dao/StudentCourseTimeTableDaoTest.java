@@ -9,10 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
-
 import java.util.List;
-
-import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = PlatformApplication.class)
@@ -23,6 +20,8 @@ public class StudentCourseTimeTableDaoTest {
 
     @Test
     public void insertSelective() {
+
+
     }
 
     @Test
@@ -30,6 +29,8 @@ public class StudentCourseTimeTableDaoTest {
         StudentCourseTimeTable table = new StudentCourseTimeTable().setStudentId(2018026589);
         List<StudentCourseTimeTable> list = studentCourseTimeTableDao.selectByExample(table);
         System.out.println(list.size());
+
+        System.out.println(list);
     }
 
     @Test

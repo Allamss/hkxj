@@ -1,7 +1,6 @@
 package cn.hkxj.platform.service;
 
 import cn.hkxj.platform.dao.ExamTimetableDao;
-import cn.hkxj.platform.dao.StudentDao;
 import cn.hkxj.platform.dao.StudentExamTimeTableDao;
 import cn.hkxj.platform.dao.StudentUserDao;
 import cn.hkxj.platform.exceptions.PasswordUnCorrectException;
@@ -31,8 +30,6 @@ import java.util.stream.Collectors;
 public class ExamTimeTableService {
     @Resource
     private NewUrpSpiderService newUrpSpiderService;
-    @Resource
-    private StudentDao studentDao;
     @Resource
     private UrpCourseService urpCourseService;
     @Resource
