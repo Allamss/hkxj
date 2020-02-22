@@ -46,6 +46,7 @@ public class StudentBindService {
     private StudentUserDao studentUserDao;
     @Value("${student.password.salt}")
     private String key;
+
     /**
      * 学号与微信公众平台openID关联
      * <p>
@@ -76,38 +77,41 @@ public class StudentBindService {
     /**
      * 用于学生从非微信渠道登录
      *
-     * @param account  账号
+     * @param account        账号
      * @param enablePassword 密码
      * @return 学生信息
      */
     public StudentVo studentLogin(String account, String enablePassword) throws PasswordUnCorrectException {
 
         StudentUser student = studentUserDao.selectStudentByAccount(Integer.parseInt(account));
-        if (student != null && (!student.getIsCorrect() || !student.getPassword().equals(encrypt(student.getPassword(), account + key)))) {
-            newUrpSpiderService.checkStudentPassword(account, enablePassword);
-            studentUserDao.updatePassword(account, enablePassword);
-        } else if (student == null) {
+        if (student != null) {
+            String encrypt = encrypt(enablePassword, account + key);
+            if (!student.getIsCorrect() || !student.getPassword().equals(encrypt)) {
+                newUrpSpiderService.checkStudentPassword(account, enablePassword);
+                studentUserDao.updatePassword(account, encrypt);
+            }
+        } else {
             student = getStudentUserInfo(account, enablePassword);
             studentUserDao.insertStudentSelective(student);
         }
 
-        return new StudentVo(student, student.getAccount().toString()+key);
+        return new StudentVo(student, student.getAccount().toString() + key);
     }
 
     /**
      * 如果已经存在openid则更新关联的学号
      * 并且插入一条更新的记录
-     *
+     * <p>
      * 否则插入一条新数据再绑定
      *
      * @param account 学号
      * @param openid  微信用户唯一标识
      * @param appid   微信平台对应的id
      */
-     void studentBind(String account, String openid, String appid) {
+    void studentBind(String account, String openid, String appid) {
         WechatOpenid wechatOpenid = wechatOpenIdDao.selectByUniqueKey(appid, openid);
         if (wechatOpenid != null) {
-            if (!account.equals(wechatOpenid.getAccount())){
+            if (!account.equals(wechatOpenid.getAccount())) {
                 wechatOpenIdDao.updateByPrimaryKeySelective(
                         wechatOpenid.setAccount(Integer.parseInt(account)).setGmtModified(new Date()));
 
@@ -143,7 +147,7 @@ public class StudentBindService {
 
     }
 
-    public StudentUser getStudentUserInfo(String account, String password){
+    public StudentUser getStudentUserInfo(String account, String password) {
         StudentUser userInfo = newUrpSpiderService.getStudentUserInfo(account, password);
         UrpClass urpClass = classService.getClassByName(userInfo.getClassName(), userInfo.getAccount().toString());
         userInfo.setUrpclassNum(Integer.parseInt(urpClass.getClassNum()));

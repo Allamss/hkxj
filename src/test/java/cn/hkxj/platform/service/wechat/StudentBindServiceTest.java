@@ -22,7 +22,7 @@ public class StudentBindServiceTest {
 
     @Test
     public void studentLogin() {
-        StudentVo studentVo = studentBindService.studentLogin("2016023344", "1");
+        StudentVo studentVo = studentBindService.studentLogin("2017026003", "1");
         System.out.println(studentVo);
         assert studentVo != null;
     }
