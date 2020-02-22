@@ -4,7 +4,10 @@ import cn.hkxj.platform.dao.ExamTimetableDao;
 import cn.hkxj.platform.dao.StudentDao;
 import cn.hkxj.platform.dao.StudentExamTimeTableDao;
 import cn.hkxj.platform.dao.StudentUserDao;
+import cn.hkxj.platform.exceptions.PasswordUnCorrectException;
+import cn.hkxj.platform.exceptions.UrpRequestException;
 import cn.hkxj.platform.pojo.*;
+import cn.hkxj.platform.spider.newmodel.examtime.UrpExamTime;
 import cn.hkxj.platform.utils.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -12,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -43,8 +47,22 @@ public class ExamTimeTableService {
 
     public List<Exam> getExamTimeListFromSpider(int account) {
         StudentUser student = studentUserDao.selectStudentByAccount(account);
+        if (student == null) {
+            throw new PasswordUnCorrectException();
+        }
+        List<UrpExamTime> examTime;
+        try {
+            examTime = newUrpSpiderService.getExamTime(student);
+        } catch (UrpRequestException e) {
 
-        return newUrpSpiderService.getExamTime(student).stream()
+            if (e.getCode() >= 500) {
+                return Collections.emptyList();
+            }
+            throw e;
+        }
+
+
+        return examTime.stream()
                 .filter(x -> StringUtils.isNotEmpty(x.getDate()))
                 .map(x -> {
                             if (StringUtils.isEmpty(x.getExamTime())) {
@@ -104,7 +122,7 @@ public class ExamTimeTableService {
                     .collect(Collectors.toList());
             try {
                 saveExamTimeTable(account, list);
-            }catch (Exception e){
+            } catch (Exception e) {
                 log.error("save exam timetable error", e);
             }
             return examList;

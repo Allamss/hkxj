@@ -39,7 +39,7 @@ public class NewUrpSpiderServiceTest {
 
     @Test
     public void getExamTime(){
-        StudentUser student = studentUserDao.selectStudentByAccount(2019020856);
+        StudentUser student = studentUserDao.selectStudentByAccount(2017024832);
 
         List<UrpExamTime> examTime = newUrpSpiderService.getExamTime(student);
 
