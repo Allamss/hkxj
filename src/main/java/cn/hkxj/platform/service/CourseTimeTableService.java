@@ -2,6 +2,7 @@ package cn.hkxj.platform.service;
 
 import cn.hkxj.platform.MDCThreadPool;
 import cn.hkxj.platform.dao.*;
+import cn.hkxj.platform.exceptions.PasswordUnCorrectException;
 import cn.hkxj.platform.exceptions.UrpRequestException;
 import cn.hkxj.platform.pojo.*;
 import cn.hkxj.platform.pojo.vo.CourseTimeTableVo;
@@ -99,7 +100,9 @@ public class CourseTimeTableService {
 
     public List<CourseTimeTableVo> getCurrentTermCourseTimeTableByStudent(int account) {
         StudentUser user = studentUserDao.selectStudentByAccount(account);
-
+        if(user == null){
+            throw new PasswordUnCorrectException();
+        }
         return getCurrentTermCourseTimeTableByStudent(user);
     }
 
