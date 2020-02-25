@@ -1,5 +1,6 @@
 package cn.hkxj.platform.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 /**
@@ -7,11 +8,14 @@ import lombok.Data;
  * @date 2019/9/1 14:48
  */
 @Data
-public class SchoolTime {
+
+public class SchoolTime  {
 
     private int day;
 
     private int week;
 
     private Term term;
+
 }
+

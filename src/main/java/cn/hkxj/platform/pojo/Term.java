@@ -1,5 +1,6 @@
 package cn.hkxj.platform.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.common.base.MoreObjects;
 import lombok.Data;
 import org.apache.commons.lang3.builder.EqualsBuilder;

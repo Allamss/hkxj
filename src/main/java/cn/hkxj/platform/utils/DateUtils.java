@@ -1,29 +1,36 @@
 package cn.hkxj.platform.utils;
-
 import cn.hkxj.platform.pojo.SchoolTime;
 import cn.hkxj.platform.pojo.Term;
-import lombok.Data;
+import cn.hkxj.platform.pojo.constant.RedisKeys;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.CharUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * @author Yuki
  * @date 2018/11/5 23:22
  */
 
-@Component
 @Slf4j
+@Component
 public class DateUtils {
 
-    private final static String term_start = "2019-08-26";
+    static RedisTemplate redisTemplate;
+
+    static StringRedisTemplate stringRedisTemplate;
+
+//    private final static String term_start = "2019-08-26";
 
     public final static String YYYY_MM_DD_PATTERN = "yyyyMMdd";
 
@@ -36,11 +43,32 @@ public class DateUtils {
     public final static String HH_MM_SS_PATTERN = "hh:mm:ss";
 
 
+    @Autowired
+    public  void setTemplate(RedisTemplate redisTemplate){
+        DateUtils.redisTemplate = redisTemplate;
+    }
+    @Autowired
+    public  void setTemplate(StringRedisTemplate stringRedisTemplate){
+        DateUtils.stringRedisTemplate = stringRedisTemplate;
+    }
+
+    /*
+     *  学期开始时间存入redis，可动态配置
+     */
+    public static   void  setTermStart(String termStart)  {
+        stringRedisTemplate.opsForValue().set(RedisKeys.TERM_START.getName(),termStart);
+    }
+
+    public static    String getTermStart()  {
+        return stringRedisTemplate.opsForValue().get(RedisKeys.TERM_START.getName());
+    }
+
+
     public static Integer getCurrentWeek() {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
         Calendar calendar = Calendar.getInstance(Locale.CHINA);
         try {
-            calendar.setTime(format.parse(term_start));
+            calendar.setTime(format.parse(getTermStart()));
         } catch (ParseException e) {
             log.error("parse string to date fail，error message{}", e.getMessage());
             throw new RuntimeException("parse string to date fail，error message" + e.getMessage());
@@ -92,11 +120,27 @@ public class DateUtils {
         }
     }
 
-    public static SchoolTime getCurrentSchoolTime() {
-        SchoolTime schoolTime = new SchoolTime();
-        schoolTime.setDay(getCurrentDay());
+//    public static SchoolTime getCurrentSchoolTime() {
+//        SchoolTime schoolTime = new SchoolTime();
+//        schoolTime.setDay(getCurrentDay());
+//        schoolTime.setWeek(getCurrentWeek());
+//        schoolTime.setTerm(new Term(2019, 2020, 1));
+//        return schoolTime;
+//    }
+
+    /*
+     *  根据学期获取周
+     */
+    public static void setSchoolTime(Term term) {
+        redisTemplate.opsForValue().set(RedisKeys.TERM.getName(),term);
+    }
+
+    public static SchoolTime getCurrentSchoolTime()  {
+        SchoolTime schoolTime=new SchoolTime();
+        Term term=(Term)redisTemplate.opsForValue().get(RedisKeys.TERM.getName());
+        schoolTime.setTerm(term);
         schoolTime.setWeek(getCurrentWeek());
-        schoolTime.setTerm(new Term(2019, 2020, 1));
+        schoolTime.setDay(getCurrentDay());
         return schoolTime;
     }
 
@@ -125,4 +169,5 @@ public class DateUtils {
         System.out.println(date);
         System.out.println(dateToChinese(date));
     }
+
 }

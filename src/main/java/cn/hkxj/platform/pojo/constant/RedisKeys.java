@@ -8,6 +8,12 @@ public enum RedisKeys {
     /**
      * redis key 实例
      */
+    /**
+     *   学期开学时间
+     */
+    TERM_START("TERM_START"),
+
+    TERM("TERM"),
 
     EMPTY_ROOM_KEY("app_search_service:emptyRoom:"),
 
