@@ -96,7 +96,7 @@ public class DateUtils {
     public static SchoolTime getCurrentSchoolTime() {
         SchoolTime schoolTime = new SchoolTime();
         schoolTime.setDay(getCurrentDay());
-        schoolTime.setWeek(getCurrentWeek());
+        schoolTime.setSchoolWeek(getCurrentWeek());
         schoolTime.setTerm(new Term(2019, 2020, 2));
         return schoolTime;
     }
@@ -122,8 +122,7 @@ public class DateUtils {
     }
 
     public static void main(String[] args) {
-        Date date = localDateToDate("20191105102840", PATTERN_WITHOUT_SPILT);
-        System.out.println(date);
-        System.out.println(dateToChinese(date));
+        Integer day = getCurrentDay();
+        System.out.println(day);
     }
 }

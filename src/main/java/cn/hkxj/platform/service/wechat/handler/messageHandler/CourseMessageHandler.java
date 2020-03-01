@@ -56,7 +56,7 @@ public class CourseMessageHandler implements WxMpMessageHandler {
             ScheduleTask scheduleTask = new ScheduleTask(wxMpService, wxMpXmlMessage, SubscribeScene.COURSE_PUSH.getScene());
             //所有使用该接口的人，将其订阅状态都置为可用
             scheduleTaskService.checkAndSetSubscribeStatus(scheduleTask, true);
-            plusProcessing(wxMpXmlMessage, wxMpService);
+
             //这里返回null，是因为plus发送模板消息后，不需要发送文本消息。
             return null;
         }

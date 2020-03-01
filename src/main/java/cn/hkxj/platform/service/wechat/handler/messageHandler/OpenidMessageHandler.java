@@ -19,6 +19,7 @@ public class OpenidMessageHandler implements WxMpMessageHandler {
     @Resource
     private TextBuilder textBuilder;
 
+    @Override
     public WxMpXmlOutMessage handle(WxMpXmlMessage wxMpXmlMessage,
                                     Map<String, Object> map,
                                     WxMpService wxMpService,

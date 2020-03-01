@@ -1,10 +1,12 @@
 package cn.hkxj.platform.dao;
 
 import cn.hkxj.platform.mapper.CourseTimeTableDetailMapper;
-import cn.hkxj.platform.pojo.*;
+import cn.hkxj.platform.pojo.CourseTimeTableDetail;
+import cn.hkxj.platform.pojo.SchoolTime;
+import cn.hkxj.platform.pojo.StudentCourseTable;
+import cn.hkxj.platform.pojo.Term;
 import cn.hkxj.platform.pojo.example.CourseTimeTableDetailExample;
 import cn.hkxj.platform.utils.DateUtils;
-import com.google.common.collect.Lists;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -35,8 +37,8 @@ public class CourseTimeTableDetailDao {
                 .andTermYearEqualTo(schoolTime.getTerm().getTermYear())
                 .andTermOrderEqualTo(schoolTime.getTerm().getOrder())
                 .andDayEqualTo(schoolTime.getDay())
-                .andStartWeekLessThanOrEqualTo(schoolTime.getWeek())
-                .andEndWeekGreaterThanOrEqualTo(schoolTime.getWeek())
+                .andStartWeekLessThanOrEqualTo(schoolTime.getSchoolWeek())
+                .andEndWeekGreaterThanOrEqualTo(schoolTime.getSchoolWeek())
                 .andDistinctNotEqualTo(DateUtils.getContraryDistinct())
                 .andOrderEqualTo(section);
         return courseTimeTableDetailMapper.selectByExample(example);
@@ -49,8 +51,8 @@ public class CourseTimeTableDetailDao {
                 .andTermYearEqualTo(schoolTime.getTerm().getTermYear())
                 .andTermOrderEqualTo(schoolTime.getTerm().getOrder())
                 .andDayEqualTo(schoolTime.getDay())
-                .andStartWeekLessThanOrEqualTo(schoolTime.getWeek())
-                .andEndWeekGreaterThanOrEqualTo(schoolTime.getWeek())
+                .andStartWeekLessThanOrEqualTo(schoolTime.getSchoolWeek())
+                .andEndWeekGreaterThanOrEqualTo(schoolTime.getSchoolWeek())
                 .andDistinctNotEqualTo(DateUtils.getContraryDistinct());
         return courseTimeTableDetailMapper.selectByExample(example);
     }
@@ -82,8 +84,8 @@ public class CourseTimeTableDetailDao {
                 .andIdIn(detailIdList)
                 .andTermYearEqualTo(schoolTime.getTerm().getTermYear())
                 .andTermOrderEqualTo(schoolTime.getTerm().getOrder())
-                .andStartWeekLessThanOrEqualTo(schoolTime.getWeek())
-                .andEndWeekGreaterThanOrEqualTo(schoolTime.getWeek())
+                .andStartWeekLessThanOrEqualTo(schoolTime.getSchoolWeek())
+                .andEndWeekGreaterThanOrEqualTo(schoolTime.getSchoolWeek())
                 .andDistinctNotEqualTo(DateUtils.getContraryDistinct());
         return courseTimeTableDetailMapper.selectByExample(example);
     }

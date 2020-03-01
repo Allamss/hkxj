@@ -1,9 +1,10 @@
 package cn.hkxj.platform.builder;
 
+import cn.hkxj.platform.pojo.SchoolTime;
 import cn.hkxj.platform.pojo.StudentUser;
+import cn.hkxj.platform.pojo.vo.CourseTimeTableVo;
 import cn.hkxj.platform.pojo.vo.GradeVo;
 import cn.hkxj.platform.pojo.wechat.CourseGroupMsg;
-import cn.hkxj.platform.pojo.wechat.CourseSubscriptionMessage;
 import cn.hkxj.platform.utils.DateUtils;
 import cn.hkxj.platform.utils.SchoolTimeUtil;
 import me.chanjar.weixin.mp.bean.template.WxMpTemplateData;
@@ -143,24 +144,24 @@ public class TemplateBuilder {
         return templateDatas;
     }
 
-    /**
-     * 组装课程推送模板消息需要的WxMpTemplateData的列表
-     * @param msg 课程推送信息
-     * @return List<WxMpTemplateData>
-     */
-    public List<WxMpTemplateData> assemblyTemplateContentForCourse(CourseSubscriptionMessage msg) {
-        String content = msg.getPushContent();
-        if(StringUtils.isEmpty(content)) { return null; }
+    public List<WxMpTemplateData> assemblyTemplateContentForCourse(StudentUser studentUser, CourseTimeTableVo courseTimeTableVo, SchoolTime schoolTime) {
         List<WxMpTemplateData> templateDataList = new ArrayList<>();
         //keyword1关键字
+        WxMpTemplateData title = new WxMpTemplateData();
+        title.setName("first");
+        title.setValue(studentUser.getName()+"同学，你待会有课哟");
+        String content = courseTimeTableVo.getCourse().getName() +
+                " 第" + courseTimeTableVo.getClassOrder() + "节";
         WxMpTemplateData course = new WxMpTemplateData();
         course.setName("keyword1");
         course.setValue(content);
         //keyword2关键字
-        WxMpTemplateData date = getCourseDateWithoutSpecificTime();
+        WxMpTemplateData date = new WxMpTemplateData();
+        date.setName("keyword2");
+        date.setValue("第" + schoolTime.getSchoolWeek() + "周   " + schoolTime.getDayOfWeekChinese());
         //remark关键字
         WxMpTemplateData remark = getCourseRemark();
-
+        templateDataList.add(title);
         templateDataList.add(course);
         templateDataList.add(date);
         templateDataList.add(remark);
@@ -191,18 +192,6 @@ public class TemplateBuilder {
         return templateDataList;
     }
 
-
-    /**
-     * 生成考试推送模板消息的remark
-     * @return 考试推送模板消息的remark
-     */
-    private WxMpTemplateData getExamRemark(){
-        WxMpTemplateData remark = new WxMpTemplateData();
-        remark.setName("remark");
-        remark.setValue("查询仅供参考，以学校下发的考试通知为准，如有疑问微信添加吴彦祖【hkdhd666】\n");
-        return remark;
-    }
-
     /**
      * 生成课程推送模板消息的remark
      * @return 课程推送模板消息的remark
@@ -210,7 +199,7 @@ public class TemplateBuilder {
     private WxMpTemplateData getCourseRemark(){
         WxMpTemplateData remark = new WxMpTemplateData();
         remark.setName("remark");
-        remark.setValue("点击即可查看详情，快放假了加油");
+        remark.setValue("开学快乐，大家一起加油～");
         return remark;
     }
 

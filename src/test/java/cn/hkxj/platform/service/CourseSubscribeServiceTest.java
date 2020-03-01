@@ -1,24 +1,17 @@
 package cn.hkxj.platform.service;
 
 import cn.hkxj.platform.PlatformApplication;
-import cn.hkxj.platform.pojo.dto.CourseTimeTableDetailDto;
-import cn.hkxj.platform.pojo.wechat.CourseGroupMsg;
-import cn.hkxj.platform.pojo.wechat.CourseSubscriptionMessage;
+import cn.hkxj.platform.pojo.SchoolTime;
+import cn.hkxj.platform.pojo.WechatOpenid;
+import cn.hkxj.platform.pojo.vo.CourseTimeTableVo;
+import cn.hkxj.platform.utils.DateUtils;
 import org.junit.Test;
-import org.junit.platform.commons.util.StringUtils;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import javax.annotation.Resource;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * @author Yuki
@@ -33,32 +26,33 @@ public class CourseSubscribeServiceTest {
     private CourseSubscribeService courseSubscribeService;
 
     @Test
-    public void getCoursesSubscribeForCurrentDay() {
+    public void currentWeekCourse() {
+        WechatOpenid wechatOpenid = new WechatOpenid().setAccount(2019026628);
+        SchoolTime schoolTime = DateUtils.getCurrentSchoolTime();
+        schoolTime.setDay(3);
+        schoolTime.setSchoolWeek(8);
+        CourseTimeTableVo table = courseSubscribeService.getTableBySection(wechatOpenid, 3, schoolTime);
+        assert table != null;
 
-//        for (CourseSubscriptionMessage message : courseSubscribeService.getSubscriptionMessages(CourseSubscribeService.FIRST_SECTION)) {
-//            System.out.println(message);
-//        }
+    }
 
+    @Test
+    public void notInCurrentWeekCourse() {
+        WechatOpenid wechatOpenid = new WechatOpenid().setAccount(2019026628);
+        SchoolTime schoolTime = DateUtils.getCurrentSchoolTime();
+        schoolTime.setDay(3);
+        schoolTime.setSchoolWeek(9);
+        CourseTimeTableVo table = courseSubscribeService.getTableBySection(wechatOpenid, 3, schoolTime);
+        System.out.println(table);
+        assert table == null;
 
-        List<CourseSubscriptionMessage> collect = courseSubscribeService.getSubscriptionMessages(CourseSubscribeService.FIRST_SECTION).stream()
-                .filter(subscriptionMessage -> !Objects.isNull(subscriptionMessage))
-                .filter(subscriptionMessage -> !Objects.isNull(subscriptionMessage.getDetailDto()))
-                .filter(x-> StringUtils.isNotBlank(x.getPushContent()))
-                .collect(Collectors.toList());
-
-        System.out.println(collect.size());
     }
 
     @Test
     public void getCourseTimeTables() {
-        CourseTimeTableDetailDto tablesSection = courseSubscribeService.getCourseTimeTablesSection(2017026003, 1);
+        for (WechatOpenid wechatOpenid : courseSubscribeService.getSubscribeOpenid()) {
+            System.out.println(wechatOpenid);
+        }
 
-        System.out.println(tablesSection);
-
-//        Map<String, Set<CourseGroupMsg>> map = courseSubscribeService.getCoursesSubscribeForCurrentDay();
-//        map.forEach((appid, msgs) -> {
-//            System.out.println("appid = " + appid);
-//            System.out.println(msgs);
-//        });
     }
 }

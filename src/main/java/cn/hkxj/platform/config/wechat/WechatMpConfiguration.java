@@ -8,13 +8,10 @@ import cn.hkxj.platform.service.wechat.handler.messageHandler.*;
 import com.google.common.collect.Maps;
 import me.chanjar.weixin.common.bean.menu.WxMenu;
 import me.chanjar.weixin.common.bean.menu.WxMenuButton;
-import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpInMemoryConfigStorage;
-import me.chanjar.weixin.mp.api.WxMpMenuService;
 import me.chanjar.weixin.mp.api.WxMpMessageRouter;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.api.impl.WxMpServiceImpl;
-import me.chanjar.weixin.mp.bean.menu.WxMpGetSelfMenuInfoResult;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -152,13 +149,11 @@ public class WechatMpConfiguration {
 //				.handler(cetSearchHandler)
 //				.end()
                 .rule()
-                .async(false)
-                .interceptor(wechatOpenIdInterceptor)
-                .interceptor(studentInfoInterceptor)
-                .interceptor(randomMatchInterceptor)
-                .content("openid")
-                .handler(openidMessageHandler)
-                .end()
+                    .async(false)
+                    .interceptor(wechatOpenIdInterceptor)
+                    .content("openid")
+                    .handler(openidMessageHandler)
+                    .end()
                 .rule()
                 .async(false)
                 .interceptor(wechatOpenIdInterceptor)
