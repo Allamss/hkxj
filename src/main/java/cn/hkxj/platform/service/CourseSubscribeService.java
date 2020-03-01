@@ -2,14 +2,12 @@ package cn.hkxj.platform.service;
 
 import cn.hkxj.platform.config.wechat.WechatMpPlusProperties;
 import cn.hkxj.platform.dao.ScheduleTaskDao;
-import cn.hkxj.platform.mapper.OpenidMapper;
-import cn.hkxj.platform.mapper.OpenidPlusMapper;
+import cn.hkxj.platform.dao.WechatOpenIdDao;
 import cn.hkxj.platform.mapper.StudentMapper;
 import cn.hkxj.platform.pojo.ScheduleTask;
 import cn.hkxj.platform.pojo.Student;
 import cn.hkxj.platform.pojo.constant.SubscribeScene;
 import cn.hkxj.platform.pojo.dto.CourseTimeTableDetailDto;
-import cn.hkxj.platform.pojo.example.OpenidExample;
 import cn.hkxj.platform.pojo.example.StudentExample;
 import cn.hkxj.platform.pojo.wechat.CourseSubscriptionMessage;
 import cn.hkxj.platform.pojo.wechat.Openid;
@@ -54,15 +52,11 @@ public class CourseSubscribeService {
     @Resource
     private StudentMapper studentMapper;
     @Resource
-    private OpenidMapper openidMapper;
-    @Resource
     private WechatMpPlusProperties wechatMpPlusProperties;
     @Resource
-    private OpenidPlusMapper openidPlusMapper;
-    @Resource
-    private CourseTimeTableService courseTimeTableService;
-    @Resource
     private ScheduleTaskDao scheduleTaskDao;
+    @Resource
+    private WechatOpenIdDao wechatOpenIdDao;
 
 
     public Set<CourseSubscriptionMessage> getSubscriptionMessages(int condition) {
@@ -118,6 +112,7 @@ public class CourseSubscribeService {
     private Map<String, Student> getOpenIdMap(List<String> openIdList, String appId) {
         //获得所有openid的实体
         List<Openid> openidObjects = getOpenIdList(openIdList, appId);
+
         //如果openidObjects为null，说明没有订阅该任务的人，直接返回一个EmptyMap
         if (Objects.isNull(openidObjects)) {
             return Collections.emptyMap();
@@ -161,27 +156,6 @@ public class CourseSubscribeService {
         return null;
     }
 
-    /**
-     * 根据openid列表获取相应的openid实体
-     *
-     * @param openIdList openid列表
-     * @param appId      appId
-     * @return openid实体列表
-     */
-    private List<Openid> getOpenIdList(List<String> openIdList, String appId) {
-        //如果openid列表为空，直接返回一个的emptyList
-        if (CollectionUtils.isEmpty(openIdList)) {
-            return Collections.emptyList();
-        }
-        OpenidExample openidExample = new OpenidExample();
-        openidExample.createCriteria()
-                .andOpenidIn(openIdList);
-        //根据appId来判断查询哪张表
-        if (Objects.equals(wechatMpPlusProperties.getAppId(), appId)) {
-            return openidPlusMapper.selectByExample(openidExample);
-        }
-        return openidMapper.selectByExample(openidExample);
-    }
 
     /**
      * 通过openid实体列表来获取相应的学生实体

@@ -1,18 +1,19 @@
 package cn.hkxj.platform.dao;
 
 
-import cn.hkxj.platform.mapper.WechatOpenidMapper;
+import cn.hkxj.platform.mapper.ext.WechatOpenIdExtMapper;
+import cn.hkxj.platform.pojo.ScheduleTask;
 import cn.hkxj.platform.pojo.WechatOpenid;
 import cn.hkxj.platform.pojo.WechatOpenidExample;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.util.List;
 
 @Service
 public class WechatOpenIdDao {
-    @Resource
-    private WechatOpenidMapper wechatOpenidMapper;
+    @Autowired
+    private WechatOpenIdExtMapper wechatOpenIdExtMapper;
 
     public List<WechatOpenid> selectByPojo(WechatOpenid wechatOpenid) {
         WechatOpenidExample example = new WechatOpenidExample();
@@ -25,7 +26,7 @@ public class WechatOpenIdDao {
             criteria.andAppidEqualTo(wechatOpenid.getAppid());
         }
 
-        return wechatOpenidMapper.selectByExample(example);
+        return wechatOpenIdExtMapper.selectByExample(example);
     }
 
     public WechatOpenid selectByUniqueKey(String appid, String openid) {
@@ -35,17 +36,17 @@ public class WechatOpenIdDao {
 
 
     public void insertSelective(WechatOpenid wechatOpenid){
-        wechatOpenidMapper.insertSelective(wechatOpenid);
+        wechatOpenIdExtMapper.insertSelective(wechatOpenid);
     }
 
     public void updateByPrimaryKeySelective(WechatOpenid wechatOpenid){
-        wechatOpenidMapper.updateByPrimaryKeySelective(wechatOpenid);
+        wechatOpenIdExtMapper.updateByPrimaryKeySelective(wechatOpenid);
     }
 
     public List<WechatOpenid> getOpenid(String openid) {
         WechatOpenidExample wechatOpenidExample = new WechatOpenidExample();
         wechatOpenidExample.createCriteria().andOpenidEqualTo(openid);
-        return wechatOpenidMapper.selectByExample(wechatOpenidExample);
+        return wechatOpenIdExtMapper.selectByExample(wechatOpenidExample);
     }
 
 
@@ -55,19 +56,23 @@ public class WechatOpenIdDao {
                 .andAppidEqualTo(appid)
                 .andOpenidEqualTo(openid);
 
-        wechatOpenidMapper.updateByExampleSelective(new WechatOpenid().setIsBind(false), example);
+        wechatOpenIdExtMapper.updateByExampleSelective(new WechatOpenid().setIsBind(false), example);
     }
 
 
     public void openIdUnbindAllPlatform(int account) {
         WechatOpenidExample wechatOpenidExample = new WechatOpenidExample();
         wechatOpenidExample.createCriteria().andAccountEqualTo(account);
-        wechatOpenidMapper.updateByExampleSelective(new WechatOpenid().setIsBind(false), wechatOpenidExample);
+        wechatOpenIdExtMapper.updateByExampleSelective(new WechatOpenid().setIsBind(false), wechatOpenidExample);
     }
 
 
     public List<String> getAllOpenidsFromOneClass(int classId, String openid, String appid) {
-        return wechatOpenidMapper.getAllOpenidsFromOneClass(classId, openid);
+        return wechatOpenIdExtMapper.getAllOpenidsFromOneClass(classId, openid);
+    }
+
+    public List<WechatOpenid> selectBySubscribe(ScheduleTask scheduleTask){
+        return wechatOpenIdExtMapper.selectBySubscribe(scheduleTask);
     }
 
 

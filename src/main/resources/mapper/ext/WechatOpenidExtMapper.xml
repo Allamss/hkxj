@@ -19,4 +19,28 @@
 
     </insert>
 
+
+    <select id="selectBySubscribe" parameterType="cn.hkxj.platform.pojo.ScheduleTask" resultMap="cn.hkxj.platform.mapper.WechatOpenidMapper.BaseResultMap">
+        select
+            wechat_openid.id, wechat_openid.openid, account,
+            wechat_openid.gmt_create, gmt_modified, is_bind,
+            wechat_openid.appid
+        from schedule_task
+
+        join wechat_openid on schedule_task.openid = wechat_openid.openid
+
+        <where>
+            <if test="appId != null">
+                and schedule_task.appid = #{appId}
+            </if>
+            <if test="isSubscribe != null">
+                and is_subscribe = #{isSubscribe}
+            </if>
+            <if test="scene != null">
+                and scene = #{scene}
+            </if>
+        </where>
+
+    </select>
+
 </mapper>
