@@ -111,10 +111,9 @@ public class StudentBindService {
     void studentBind(String account, String openid, String appid) {
         WechatOpenid wechatOpenid = wechatOpenIdDao.selectByUniqueKey(appid, openid);
         if (wechatOpenid != null) {
-            if (!account.equals(wechatOpenid.getAccount())) {
-                wechatOpenIdDao.updateByPrimaryKeySelective(
-                        wechatOpenid.setAccount(Integer.parseInt(account)).setGmtModified(new Date()));
-
+            wechatOpenIdDao.updateByPrimaryKeySelective(
+                    wechatOpenid.setAccount(Integer.parseInt(account)).setGmtModified(new Date()).setIsBind(true));
+            if (!account.equals(wechatOpenid.getAccount().toString())) {
                 wechatBindRecordDao.insertSelective(new WechatBindRecord()
                         .setOriginAccount(wechatOpenid.getAccount().toString())
                         .setUpdateAccount(account)

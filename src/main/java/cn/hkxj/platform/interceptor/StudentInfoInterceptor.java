@@ -53,9 +53,6 @@ public class StudentInfoInterceptor implements WxMessageInterceptor{
             });
         }
 
-
-
-
         return true;
     }
 

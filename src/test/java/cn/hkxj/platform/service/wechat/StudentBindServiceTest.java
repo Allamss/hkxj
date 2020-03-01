@@ -29,9 +29,9 @@ public class StudentBindServiceTest {
 
     @Test
     public void studentBind() {
-        Student student = studentDao.selectStudentByAccount(2016023344);
-        studentBindService.studentBind("2016023344", "o6393wvmheXId6z3pO9hPsZrI2VQ", "test");
-        assert student != null;
+
+        studentBindService.studentBind("2017025838", "oCxRO1G9N755dOY5dwcT5l3IlS3Y", "wx541fd36e6b400648");
+
     }
 
     @Test

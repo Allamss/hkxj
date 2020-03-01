@@ -4,6 +4,7 @@ import cn.hkxj.platform.exceptions.PasswordUnCorrectException;
 import cn.hkxj.platform.interceptor.WxMessageInterceptor;
 import cn.hkxj.platform.service.OpenIdService;
 import cn.hkxj.platform.utils.ApplicationUtil;
+import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.api.WxErrorExceptionHandler;
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.common.session.WxSessionManager;
@@ -14,16 +15,13 @@ import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.message.WxMpXmlMessage;
 import me.chanjar.weixin.mp.bean.message.WxMpXmlOutMessage;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author junrong.chen
  * @date 2018/11/17
  */
+@Slf4j
 public class WxMessageRouterRule extends WxMpMessageRouterRule {
 	private List<WxMessageInterceptor> interceptors = new ArrayList<>();
     private final WxMessageRouter routerBuilder;
@@ -203,6 +201,7 @@ public class WxMessageRouterRule extends WxMpMessageRouterRule {
 			return res;
 		} catch (WxErrorException e) {
 			exceptionHandler.handle(e);
+			log.error("wechat handled error", e);
 		}
 		return null;
 	}

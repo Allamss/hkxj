@@ -49,7 +49,7 @@ public class OpenIdService {
     /**
      * 已修改并在OpenIdServiceTest里面进行了单元测试
      */
-    public StudentUser getStudentByOpenId(String appid, String openid) {
+    public StudentUser getStudentByOpenId(String openid, String appid ) {
         WechatOpenid wechatOpenid = wechatOpenIdDao.selectByUniqueKey(appid, openid);
         return studentUserDao.selectStudentByAccount(wechatOpenid.getAccount());
 

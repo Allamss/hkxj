@@ -1,6 +1,9 @@
 package cn.hkxj.platform.service;
 
-import cn.hkxj.platform.dao.*;
+import cn.hkxj.platform.dao.CourseDao;
+import cn.hkxj.platform.dao.CourseTimeTableDao;
+import cn.hkxj.platform.dao.TeacherDao;
+import cn.hkxj.platform.dao.UrpClassRoomDao;
 import cn.hkxj.platform.mapper.ClassCourseMapper;
 import cn.hkxj.platform.mapper.ClassCourseTimetableMapper;
 import cn.hkxj.platform.mapper.TeacherCourseMapper;
@@ -44,8 +47,6 @@ public class UrpSearchServiceTest {
     private ClassCourseMapper classCourseMapper;
     @Resource
     private ClassCourseTimetableMapper classCourseTimetableMapper;
-    @Resource
-    private UrpClassDao urpClassDao;
 
     @Test
     public void searchTimetableByCourse() {

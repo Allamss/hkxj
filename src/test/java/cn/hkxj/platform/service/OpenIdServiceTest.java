@@ -46,7 +46,7 @@ public class OpenIdServiceTest {
 
     @Test
     public void openidIsBind(){
-        boolean a = openIdService.openidIsBind("o6393ws2oaJFXBZwViWSTJd6ABkU", "wx2212ea680ca5c05d");
+        boolean a = openIdService.openidIsBind("oCxRO1G9N755dOY5dwcT5l3IlS3Y", "wx541fd36e6b400648");
         System.out.println(a);
 
     }

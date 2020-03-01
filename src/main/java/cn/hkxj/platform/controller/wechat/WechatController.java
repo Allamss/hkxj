@@ -6,8 +6,6 @@ import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.message.WxMpXmlMessage;
 import me.chanjar.weixin.mp.bean.message.WxMpXmlOutMessage;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.web.bind.annotation.*;
 
@@ -100,7 +98,7 @@ public class WechatController {
 		return out;
 	}
 
-	private WxMpXmlOutMessage route(WxMpXmlMessage message, String appid) {
+	WxMpXmlOutMessage route(WxMpXmlMessage message, String appid) {
 		try {
 			return WechatMpConfiguration.getRouters().get(appid).route(message);
 		} catch (Exception e) {
