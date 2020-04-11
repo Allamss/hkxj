@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.hkxj.platform.mapper.TextMapper">
+
+    <insert id="insertText" parameterType="cn.hkxj.platform.pojo.Text">
+        INSERT INTO text(student_id,text,is_anonymous) values(#{student_id},#{text},#{is_anonymous})
+    </insert>
+
+    <delete id="deleteById" parameterType="int">
+        DELETE FROM text WHERE id=#{id}
+    </delete>
+
+    <select id="selectById" resultType="int">
+        SELECT * FROM text WHERE id=#{id}
+    </select>
+
+    <update id="updateText" parameterType="cn.hkxj.platform.pojo.Text">
+        UPDATE text SET text=#{text} WHERE id=#{id}
+    </update>
+</mapper>
