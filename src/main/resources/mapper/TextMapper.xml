@@ -10,7 +10,7 @@
         DELETE FROM text WHERE id=#{id}
     </delete>
 
-    <select id="selectById" resultType="int">
+    <select id="selectById" parameterType="int" resultType="cn.hkxj.platform.pojo.Text">
         SELECT * FROM text WHERE id=#{id}
     </select>
 
